@@ -1,0 +1,259 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  password            String
+  passwordResetCode   Int?
+  passwordResetExpiry DateTime?
+  firstName           String    @map("first_name")
+  lastName            String?   @map("last_name")
+  phoneNumber         String
+  address             String?
+  dateOfBirth         DateTime  @map("date_of_birth")
+  gender              GENDER
+  profilePicture      String?   @map("profile_picture")
+  role                ROLE      @default(PATIENT)
+  isActive            Boolean   @default(true) @map("is_active")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  patient Patient?
+  doctor  Doctor?
+
+  @@map("users")
+}
+
+model Patient {
+  id                    String      @id @default(uuid())
+  userId                String      @unique
+  emergencyContactName  String?     @map("emergency_contact_name")
+  emergencyContactPhone String?     @map("emergency_contact_phone")
+  bloodGroup            BLOOD_GROUP @map("blood_group")
+  allergies             String?
+
+  // Relations
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments   Appointment[]
+  medicalReports MedicalReport[]
+
+  @@map("patients")
+}
+
+model Doctor {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  specialtyId     String
+  licenseNumber   String   @unique @map("license_number")
+  bio             String?
+  qualification   String
+  isVerified      Boolean  @default(false) @map("is_verified")
+  experienceYears Int
+  fee             Int?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialty    Specialty        @relation(fields: [specialtyId], references: [id])
+  schedules    DoctorSchedule[]
+  timeSlots    TimeSlot[]
+  appointments Appointment[]
+
+  @@map("doctors")
+}
+
+model Specialty {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  icon        String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  doctors Doctor[]
+
+  @@map("specialties")
+}
+
+model DoctorSchedule {
+  id          String   @id @default(uuid())
+  doctorId    String
+  day         DAY
+  startTime   DateTime @default(now()) @map("start_time")
+  endTime     DateTime @default(dbgenerated("now() + interval '1 hour'")) @map("end_time")
+  isAvailable Boolean  @default(true) @map("is_available")
+
+  // Relations
+  doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, day])
+  @@map("doctor_schedules")
+}
+
+model TimeSlot {
+  id        String   @id @default(uuid())
+  doctorId  String
+  day       DAY
+  slotDate  DateTime @default(now())
+  startTime DateTime @map("start_time")
+  endTime   DateTime @map("end_time")
+  isBooked  Boolean  @default(false) @map("is_booked")
+
+  // Relations
+  doctor      Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  appointment Appointment?
+
+  @@unique([doctorId, slotDate, startTime])
+  @@map("time_slots")
+}
+
+model Appointment {
+  id        String             @id @default(uuid())
+  patientId String
+  doctorId  String
+  slotId    String             @unique
+  status    APPOINTMENT_STATUS @default(SCHEDULED)
+  reason    String?
+  notes     String?
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  patient  Patient  @relation(fields: [patientId], references: [id])
+  doctor   Doctor   @relation(fields: [doctorId], references: [id])
+  timeSlot TimeSlot @relation(fields: [slotId], references: [id])
+  payment  Payment?
+
+  @@map("appointments")
+}
+
+model Payment {
+  id            String         @id @default(uuid())
+  appointmentId String         @unique
+  amount        Int
+  paymentDate   DateTime       @default(now()) @map("payment_date")
+  transactionId String?        @map("transaction_id")
+  status        PAYMENT_STATUS @default(PENDING)
+
+  // Relations
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+
+  @@map("payments")
+}
+
+model MedicalReport {
+  id         String      @id @default(uuid())
+  patientId  String
+  title      String
+  reportType REPORT_TYPE @map("report_type")
+  reportDate DateTime    @default(now()) @map("report_date")
+  fileUrl    String?     @map("file_url")
+  notes      String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("medical_reports")
+}
+
+model Notification {
+  id        String            @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  isRead    Boolean           @default(false) @map("is_read")
+  type      NOTIFICATION_TYPE
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  @@map("notifications")
+}
+
+model Review {
+  id            String   @id @default(uuid())
+  patientId     String
+  doctorId      String
+  appointmentId String
+  rating        Int
+  comment       String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("reviews")
+}
+
+//?-----------------------------------
+//? ---------- Enums -----------------
+//?-----------------------------------
+
+enum GENDER {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum BLOOD_GROUP {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
+}
+
+enum DAY {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum APPOINTMENT_STATUS {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum PAYMENT_STATUS {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum REPORT_TYPE {
+  LAB_REPORT
+  PRESCRIPTION
+  DIAGNOSIS
+}
+
+enum NOTIFICATION_TYPE {
+  NEW_APPOINTMENT
+  APPOINTMENT_REMINDER
+  PAYMENT_CONFIRMATION
+  REPORT_AVAILABLE
+}
+
+enum ROLE {
+  PATIENT
+  DOCTOR
+  ADMIN
+  SUPER_ADMIN
+}
