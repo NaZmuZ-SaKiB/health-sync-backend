@@ -6,6 +6,8 @@ export const typeDefs = `#graphql
         emergencyContactPhone: String
         bloodGroup: BloodGroup!
         allergies: String
+        createdAt: DateTime!
+        updatedAt: DateTime!
         
         # Relations
         appointments: [Appointment!]!
