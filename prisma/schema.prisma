@@ -13,11 +13,11 @@ model User {
   password            String
   passwordResetCode   Int?
   passwordResetExpiry DateTime?
-  firstName           String    @map("first_name")
+  firstName           String?   @map("first_name")
   lastName            String?   @map("last_name")
-  phoneNumber         String
+  phoneNumber         String?
   address             String?
-  dateOfBirth         DateTime  @map("date_of_birth")
+  dateOfBirth         DateTime? @map("date_of_birth")
   gender              GENDER
   profilePicture      String?   @map("profile_picture")
   role                ROLE      @default(PATIENT)
