@@ -8,4 +8,8 @@ export const typeDefs = `#graphql
   type Query {
     ${User.queries}
   }
+
+  type Mutation {
+    ${User.mutations}
+  }
 `;
