@@ -6,11 +6,22 @@ export const typeDefs = `#graphql
         emergencyContactPhone: String
         bloodGroup: BloodGroup!
         allergies: String
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        createdAt: String!
+        updatedAt: String!
         
         # Relations
-        appointments: [Appointment!]!
-        medicalReports: [MedicalReport!]!
-}
+        # appointments: [Appointment!]!
+        # medicalReports: [MedicalReport!]!
+    }
+
+    enum BloodGroup {
+        A_POSITIVE
+        A_NEGATIVE
+        B_POSITIVE
+        B_NEGATIVE
+        O_POSITIVE
+        O_NEGATIVE
+        AB_POSITIVE
+        AB_NEGATIVE
+    }
 `;
