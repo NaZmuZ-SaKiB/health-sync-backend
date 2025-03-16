@@ -3,5 +3,10 @@ export const mutations = `#graphql
         email: String!
         password: String!
         confirmPassword: String!
-    ): SignupResponse!
+    ): AuthResponse!
+
+    signin(
+        email: String!
+        password: String!
+    ): AuthResponse!
 `;
