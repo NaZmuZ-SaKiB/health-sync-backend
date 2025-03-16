@@ -19,7 +19,7 @@ export const typeDefs = `#graphql
         # doctor: Doctor
     }
 
-    type SignupResponse {
+    type AuthResponse {
         token: String!
     }
 
