@@ -3,3 +3,8 @@ export type TUserCretaeInput = {
   password: String;
   confirmPassword: String;
 };
+
+export type TUserSigninInput = {
+  email: String;
+  password: String;
+};
