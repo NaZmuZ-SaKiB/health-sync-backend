@@ -1,5 +1,57 @@
-const queries = {};
+import status from "http-status";
+import { User } from ".";
+import config from "../../config";
+import AppError from "../../errors/AppError";
+import { TContext } from "../../types";
+import { jwtHelpers } from "../../utils/jwtHelper";
+import { TUserCretaeInput } from "./user.type";
+import bcrypt from "bcrypt";
 
-const mutations = {};
+const queries = {
+  me: () => "Hello, World!",
+};
+
+const mutations = {
+  signup: async (_: any, args: TUserCretaeInput, { prisma }: TContext) => {
+    const parsedData = await User.validations.create.parseAsync(args);
+
+    const hashedPassword = await bcrypt.hash(
+      parsedData.password,
+      Number(config.bcrypt_salt_rounds)
+    );
+
+    const isUserExist = await prisma.user.findFirst({
+      where: {
+        email: parsedData.email,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!!isUserExist) {
+      throw new AppError(status.CONFLICT, "User already exist");
+    }
+
+    const user = await prisma.user.create({
+      data: {
+        email: parsedData.email,
+        password: hashedPassword,
+      },
+    });
+
+    const token = await jwtHelpers.generateToken(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
+      config.jwt.jwt_access_token_secret as string,
+      config.jwt.jwt_access_token_expires_in as string
+    );
+
+    return { token };
+  },
+};
 
 export const resolvers = { queries, mutations };
