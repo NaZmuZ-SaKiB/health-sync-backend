@@ -19,6 +19,10 @@ export const typeDefs = `#graphql
         # doctor: Doctor
     }
 
+    type SignupResponse {
+        token: String!
+    }
+
     enum Gender {
         MALE
         FEMALE
