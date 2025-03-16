@@ -18,7 +18,7 @@ model User {
   phoneNumber         String?
   address             String?
   dateOfBirth         DateTime? @map("date_of_birth")
-  gender              GENDER
+  gender              GENDER?
   profilePicture      String?   @map("profile_picture")
   role                ROLE      @default(PATIENT)
   isActive            Boolean   @default(true) @map("is_active")
