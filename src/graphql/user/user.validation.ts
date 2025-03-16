@@ -32,7 +32,17 @@ const create = z
     path: ["confirmPassword"],
   });
 
-// Infer the TypeScript type from the Zod schema
+const signin = z.object({
+  email: z
+    .string()
+    .min(1, { message: "Email is required" })
+    .email({ message: "Invalid email address" })
+    .max(255, { message: "Email must be less than 255 characters" }),
+
+  password: z.string().min(1, { message: "Password is required" }),
+});
+
 export const validations = {
   create,
+  signin,
 };
