@@ -1,11 +1,9 @@
 import { startStandaloneServer } from "@apollo/server/standalone";
 import createApolloGraphqlServer from "./graphql";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs } from "@prisma/client/runtime/library";
-
-type TContext = {
-  prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
-};
+import { PrismaClient } from "@prisma/client";
+import { TContext } from "./types";
+import { jwtHelpers } from "./utils/jwtHelper";
+import config from "./config";
 
 const prisma = new PrismaClient();
 
@@ -14,8 +12,19 @@ const main = async () => {
 
   const { url } = await startStandaloneServer(server, {
     listen: { port: 4000 },
-    context: async (): Promise<TContext> => {
-      return { prisma };
+    context: async ({ req }): Promise<TContext> => {
+      const token = req.headers.authorization || "";
+      let currentUser = null;
+      if (token) {
+        currentUser = jwtHelpers.verifyToken(
+          token,
+          config.jwt.jwt_access_token_secret as string
+        );
+      }
+      return {
+        prisma,
+        currentUser,
+      };
     },
   });
 
