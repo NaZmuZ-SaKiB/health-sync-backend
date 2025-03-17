@@ -1,3 +1,4 @@
+import { Patient } from "./patient";
 import { User } from "./user";
 
 export const resolvers = {
@@ -6,5 +7,6 @@ export const resolvers = {
   },
   Mutation: {
     ...User.resolvers.mutations,
+    ...Patient.resolvers.mutations,
   },
 };
