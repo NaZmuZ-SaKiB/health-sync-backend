@@ -33,6 +33,7 @@ export const typeDefs = `#graphql
     }
 
     type AuthResponse {
+        success: Boolean!
         token: String!
     }
 `;
