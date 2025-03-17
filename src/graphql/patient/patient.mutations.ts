@@ -1,1 +1,3 @@
-export const mutations = `#graphql`;
+export const mutations = `#graphql
+    UpdatePatient(input: UserPatientUpdateInput!): PatientUpdateResponse!
+`;
