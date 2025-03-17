@@ -30,7 +30,7 @@ const mutations = {
     });
 
     if (!!isUserExist) {
-      throw new AppError(status.CONFLICT, "User already exist");
+      throw new AppError(status.CONFLICT, "Email already exist");
     }
 
     const user = await prisma.user.create({
