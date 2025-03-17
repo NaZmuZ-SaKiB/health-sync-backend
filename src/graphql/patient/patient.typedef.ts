@@ -24,4 +24,22 @@ export const typeDefs = `#graphql
         AB_POSITIVE
         AB_NEGATIVE
     }
+
+    input PatientUpdateInput {
+        emergencyContactName: String
+        emergencyContactPhone: String
+        bloodGroup: BloodGroup
+        allergies: String
+    }
+
+    input UserPatientUpdateInput {
+        firstName: String
+        lastName: String
+        phoneNumber: String
+        address: String
+        dateOfBirth: String
+        gender: Gender
+        profilePicture: String
+        patient: PatientUpdateInput
+    }
 `;
