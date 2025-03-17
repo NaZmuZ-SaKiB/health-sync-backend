@@ -11,5 +11,6 @@ export const typeDefs = `#graphql
 
   type Mutation {
     ${User.mutations}
+    ${Patient.mutations}
   }
 `;
