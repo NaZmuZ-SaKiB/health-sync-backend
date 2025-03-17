@@ -50,7 +50,7 @@ const mutations = {
       config.jwt.jwt_access_token_expires_in as string
     );
 
-    return { token };
+    return { token, success: true };
   },
 
   signin: async (_: any, args: TUserSigninInput, { prisma }: TContext) => {
@@ -91,7 +91,7 @@ const mutations = {
       config.jwt.jwt_access_token_expires_in as string
     );
 
-    return { token };
+    return { token, success: true };
   },
 };
 
