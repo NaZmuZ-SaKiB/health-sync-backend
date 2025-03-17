@@ -19,10 +19,6 @@ export const typeDefs = `#graphql
         # doctor: Doctor
     }
 
-    type AuthResponse {
-        token: String!
-    }
-
     enum Gender {
         MALE
         FEMALE
@@ -34,5 +30,9 @@ export const typeDefs = `#graphql
         DOCTOR
         ADMIN
         SUPER_ADMIN
+    }
+
+    type AuthResponse {
+        token: String!
     }
 `;
