@@ -37,6 +37,9 @@ const mutations = {
       data: {
         email: parsedData.email,
         password: hashedPassword,
+        patient: {
+          create: {},
+        },
       },
     });
 
