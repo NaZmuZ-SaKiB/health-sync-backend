@@ -42,4 +42,46 @@ const create = z.object({
   }),
 });
 
-export const validations = { create };
+const update = z.object({
+  firstName: z
+    .string()
+    .min(1, { message: "First name is required." })
+    .optional(),
+  lastName: z.string().min(1, { message: "Last name is required." }).optional(),
+  phoneNumber: z
+    .string()
+    .min(10, { message: "Phone number must be at least 10 digits." })
+    .optional(),
+  address: z
+    .string()
+    .min(5, { message: "Address must be at least 5 characters long." })
+    .optional(),
+  dateOfBirth: z.coerce.date({ message: "Invalid date format." }).optional(),
+  gender: gender.optional(),
+  profilePicture: z.string().optional(),
+  doctor: z
+    .object({
+      licenseNumber: z
+        .string()
+        .min(1, { message: "License number is required." })
+        .optional(),
+      bio: z.string().optional(),
+      qualification: z
+        .string()
+        .min(3, {
+          message: "Qualification must be at least 3 characters long.",
+        })
+        .optional(),
+      experienceYears: z
+        .number()
+        .min(0, { message: "Experience years must be a positive number." })
+        .optional(),
+      fee: z
+        .number()
+        .min(0, { message: "Fee must be a non-negative number." })
+        .optional(),
+    })
+    .optional(),
+});
+
+export const validations = { create, update };
