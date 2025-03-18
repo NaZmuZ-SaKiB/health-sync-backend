@@ -2,7 +2,7 @@ export const typeDefs = `#graphql
     type Doctor {
         id: ID!
         user: User!
-        # specialty: Specialty!
+        specialty: Specialty!
         licenseNumber: String!
         bio: String
         qualification: String!
@@ -18,5 +18,26 @@ export const typeDefs = `#graphql
         # appointments: [Appointment!]!
         # reviews: [Review!]!
         # averageRating: Float!
+    }
+
+    input DoctorCreateInput {
+        specialtyId: String!
+        licenseNumber: String!
+        bio: String
+        qualification: String!
+        experienceYears: Int!
+        fee: Int
+    }
+
+    input UserDoctorCreateInput {
+        email: String!
+        firstName: String!
+        lastName: String!
+        phoneNumber: String!
+        address: String!
+        dateOfBirth: String!
+        gender: Gender!
+        profilePicture: String
+        doctor: DoctorCreateInput!
     }
 `;
