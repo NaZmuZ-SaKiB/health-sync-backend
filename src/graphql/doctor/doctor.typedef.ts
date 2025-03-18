@@ -40,4 +40,23 @@ export const typeDefs = `#graphql
         profilePicture: String
         doctor: DoctorCreateInput!
     }
+
+    input DoctorUpdateInput {
+        licenseNumber: String
+        bio: String
+        qualification: String
+        experienceYears: Int
+        fee: Int
+    }
+    
+    input UserDoctorUpdateInput {
+        firstName: String
+        lastName: String
+        phoneNumber: String
+        address: String
+        dateOfBirth: String
+        gender: Gender
+        profilePicture: String
+        doctor: DoctorUpdateInput
+    }
 `;
