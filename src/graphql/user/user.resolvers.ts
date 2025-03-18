@@ -6,6 +6,7 @@ import { TContext } from "../../types";
 import { jwtHelpers } from "../../utils/jwtHelper";
 import { TUserCretaeInput, TUserSigninInput } from "./user.type";
 import bcrypt from "bcrypt";
+import { ROLE } from "@prisma/client";
 
 const queries = {
   me: () => "Hello, World!",
@@ -30,7 +31,7 @@ const mutations = {
     });
 
     if (!!isUserExist) {
-      throw new AppError(status.CONFLICT, "Email already exist");
+      throw new AppError(status.CONFLICT, "Email already exist.");
     }
 
     const user = await prisma.user.create({
@@ -68,11 +69,31 @@ const mutations = {
         email: true,
         password: true,
         role: true,
+        isActive: true,
+        doctor: {
+          select: {
+            isVerified: true,
+          },
+        },
       },
     });
 
     if (!isUserExist) {
-      throw new AppError(status.UNAUTHORIZED, "Invalid email or password");
+      throw new AppError(status.UNAUTHORIZED, "Invalid email or password.");
+    }
+
+    if (!isUserExist.isActive) {
+      throw new AppError(
+        status.UNAUTHORIZED,
+        "Your account is currently inactive."
+      );
+    }
+
+    if (isUserExist.role === ROLE.DOCTOR && !isUserExist?.doctor?.isVerified) {
+      throw new AppError(
+        status.UNAUTHORIZED,
+        "Your account is not verified yet."
+      );
     }
 
     const isPasswordMatch = await bcrypt.compare(
@@ -81,7 +102,7 @@ const mutations = {
     );
 
     if (!isPasswordMatch) {
-      throw new AppError(status.UNAUTHORIZED, "Invalid email or password");
+      throw new AppError(status.UNAUTHORIZED, "Invalid email or password.");
     }
 
     const token = jwtHelpers.generateToken(
