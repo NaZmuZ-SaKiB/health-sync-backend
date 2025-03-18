@@ -16,7 +16,7 @@ export const typeDefs = `#graphql
         
         # Relations
         patient: Patient
-        # doctor: Doctor
+        doctor: Doctor
     }
 
     enum Gender {
