@@ -25,10 +25,6 @@ export const typeDefs = `#graphql
         AB_NEGATIVE
     }
 
-    type PatientUpdateResponse {
-        success: Boolean!
-    }
-
     input PatientUpdateInput {
         emergencyContactName: String
         emergencyContactPhone: String
