@@ -7,7 +7,7 @@ import { Patient } from ".";
 const queries = {};
 
 const mutations = {
-  UpdatePatient: async (
+  updatePatient: async (
     _: any,
     args: TPatientUpdateInput,
     { prisma, currentUser }: TContext
