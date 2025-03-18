@@ -1,0 +1,22 @@
+import { GENDER } from "@prisma/client";
+
+export type TDoctorCreateInput = {
+  input: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    address: string;
+    dateOfBirth: Date;
+    gender: GENDER;
+    profilePicture?: string;
+    doctor: {
+      specialtyId: string;
+      licenseNumber: string;
+      bio?: string;
+      qualification: string;
+      experienceYears: number;
+      fee?: number;
+    };
+  };
+};
