@@ -9,8 +9,8 @@ export const typeDefs = `#graphql
         isVerified: Boolean!
         experienceYears: Int!
         fee: Int
-        createdAt: DateTime!
-        updatedAt: DateTime!
+        createdAt: String!
+        updatedAt: String!
 
         # Relations
         # schedules: [DoctorSchedule!]!
