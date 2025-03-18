@@ -1,15 +1,18 @@
 import { BLOOD_GROUP, GENDER } from "@prisma/client";
 import { z } from "zod";
 
-const gender = z.enum(Object.values(GENDER) as [string, ...string[]], {
+const gender = z.enum(Object.values(GENDER) as [GENDER, ...GENDER[]], {
   errorMap: () => ({
     message: "Invalid Gender.",
   }),
 });
 
-const bloodGroup = z.enum(Object.values(BLOOD_GROUP) as [string, ...string[]], {
-  errorMap: () => ({ message: "Invalid blood group." }),
-});
+const bloodGroup = z.enum(
+  Object.values(BLOOD_GROUP) as [BLOOD_GROUP, ...BLOOD_GROUP[]],
+  {
+    errorMap: () => ({ message: "Invalid blood group." }),
+  }
+);
 
 const update = z.object({
   firstName: z
