@@ -3,9 +3,10 @@ import status from "http-status";
 import { Doctor } from ".";
 import AppError from "../../errors/AppError";
 import { TContext } from "../../types";
-import { TDoctorCreateInput } from "./doctor.type";
+import { TDoctorCreateInput, TDoctorUpdateInput } from "./doctor.type";
 import config from "../../config";
-import { ROLE } from "@prisma/client";
+import { Prisma, ROLE } from "@prisma/client";
+import auth from "../../utils/auth";
 
 const queries = {};
 
@@ -51,6 +52,33 @@ const mutations = {
           create: doctor,
         },
       },
+    });
+
+    return { success: true };
+  },
+
+  updateDoctor: async (
+    _: any,
+    args: TDoctorUpdateInput,
+    { prisma, currentUser }: TContext
+  ) => {
+    await auth(prisma, currentUser, [ROLE.DOCTOR]);
+
+    const parsedData = await Doctor.validations.update.parseAsync(args.input);
+
+    const { doctor, ...user } = parsedData;
+
+    const updateData: Prisma.UserUpdateInput = user;
+
+    if (doctor) {
+      updateData.doctor = {
+        update: doctor,
+      };
+    }
+
+    await prisma.user.update({
+      where: { id: currentUser?.id },
+      data: updateData,
     });
 
     return { success: true };
