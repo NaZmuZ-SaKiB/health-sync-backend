@@ -20,3 +20,22 @@ export type TDoctorCreateInput = {
     };
   };
 };
+
+export type TDoctorUpdateInput = {
+  input: {
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    address?: string;
+    dateOfBirth?: Date;
+    gender?: GENDER;
+    profilePicture?: string;
+    doctor: {
+      licenseNumber?: string;
+      bio?: string;
+      qualification?: string;
+      experienceYears?: number;
+      fee?: number;
+    };
+  };
+};
