@@ -14,7 +14,7 @@ const mutations = {
     args: TSpecialtyCreate,
     { prisma, currentUser }: TContext
   ) => {
-    auth(currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
     const parsedData = await Specialty.validations.create.parseAsync(args);
 
