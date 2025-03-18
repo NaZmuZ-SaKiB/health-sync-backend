@@ -59,7 +59,7 @@ model Doctor {
   qualification   String
   isVerified      Boolean  @default(false) @map("is_verified")
   experienceYears Int
-  fee             Int?
+  fee             Int?     @default(0)
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
