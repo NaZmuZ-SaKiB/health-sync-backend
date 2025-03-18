@@ -12,17 +12,17 @@ const mutations = {
     args: TPatientUpdateInput,
     { prisma, currentUser }: TContext
   ) => {
-    auth(currentUser, [ROLE.PATIENT]);
+    await auth(prisma, currentUser, [ROLE.PATIENT]);
 
     const parsedData = await Patient.validations.update.parseAsync(args.input);
 
     const { patient, ...user } = parsedData;
 
-    const updateData: Prisma.UserUpdateInput = user as Prisma.UserUpdateInput;
+    const updateData: Prisma.UserUpdateInput = user;
 
     if (patient) {
       updateData.patient = {
-        update: patient as Prisma.PatientUpdateInput,
+        update: patient,
       };
     }
 
