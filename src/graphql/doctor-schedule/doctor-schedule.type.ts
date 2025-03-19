@@ -6,3 +6,10 @@ export type TDoctorScheduleCreateInput = {
   endTime: string;
   day: DAY;
 };
+
+export type TDoctorScheduleUpdateInput = {
+  scheduleId: string;
+  startTime?: string;
+  endTime?: string;
+  isAvailable?: boolean;
+};
