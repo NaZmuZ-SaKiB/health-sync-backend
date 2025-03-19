@@ -15,7 +15,7 @@ export const typeDefs = `#graphql
         # Relations
         schedules: [DoctorSchedule!]!
         timeSlots: [TimeSlot!]!
-        # appointments: [Appointment!]!
+        appointments: [Appointment!]!
         # reviews: [Review!]!
         # averageRating: Float!
     }
