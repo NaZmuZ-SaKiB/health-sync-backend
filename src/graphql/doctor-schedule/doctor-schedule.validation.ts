@@ -27,8 +27,8 @@ const create = z
   })
   .refine(
     (data) => {
-      const start = moment(data.startTime, "HH:mm");
-      const end = moment(data.endTime, "HH:mm");
+      const start = moment(data.startTime, timeFormat);
+      const end = moment(data.endTime, timeFormat);
       return start.isBefore(end);
     },
     {
@@ -38,8 +38,8 @@ const create = z
   )
   .refine(
     (data) => {
-      const start = moment(data.startTime, "HH:mm");
-      const end = moment(data.endTime, "HH:mm");
+      const start = moment(data.startTime, timeFormat);
+      const end = moment(data.endTime, timeFormat);
       return end.diff(start, "hours") >= 1;
     },
     {
@@ -93,8 +93,8 @@ const update = z
   .refine(
     (data) => {
       if (data.startTime && data.endTime) {
-        const start = moment(data.startTime, "HH:mm");
-        const end = moment(data.endTime, "HH:mm");
+        const start = moment(data.startTime, timeFormat);
+        const end = moment(data.endTime, timeFormat);
 
         if (!start.isBefore(end)) {
           return false;
