@@ -2,6 +2,8 @@ import { DAY } from "@prisma/client";
 import moment from "moment";
 import { z } from "zod";
 
+const timeFormat = "HH:mm";
+
 const day = z.enum(Object.values(DAY) as [DAY, ...DAY[]], {
   errorMap: () => ({
     message: "Invalid Day.",
@@ -11,12 +13,16 @@ const day = z.enum(Object.values(DAY) as [DAY, ...DAY[]], {
 const create = z
   .object({
     doctorId: z.string().min(1, { message: "Doctor ID is required." }),
-    startTime: z.string().regex(/^\d{2}:\d{2}$/, {
-      message: "Start time must be in HH:MM format.",
-    }),
-    endTime: z.string().regex(/^\d{2}:\d{2}$/, {
-      message: "End time must be in HH:MM format.",
-    }),
+    startTime: z
+      .string()
+      .refine((time) => moment(time, timeFormat, true).isValid(), {
+        message: "Start time must be in HH:mm format.",
+      }),
+    endTime: z
+      .string()
+      .refine((time) => moment(time, timeFormat, true).isValid(), {
+        message: "End time must be in HH:mm format.",
+      }),
     day,
   })
   .refine(
