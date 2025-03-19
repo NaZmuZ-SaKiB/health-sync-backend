@@ -1,3 +1,4 @@
+import { Appointment } from "./appointment";
 import { Doctor } from "./doctor";
 import { DoctorSchedule } from "./doctor-schedule";
 import { Patient } from "./patient";
@@ -16,5 +17,6 @@ export const resolvers = {
     ...Specialty.resolvers.mutations,
     ...DoctorSchedule.resolvers.mutations,
     ...TimeSlot.resolvers.mutations,
+    ...Appointment.resolvers.mutations,
   },
 };
