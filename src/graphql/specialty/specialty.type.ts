@@ -3,3 +3,7 @@ export type TSpecialtyCreate = {
   description?: string;
   icon?: string;
 };
+
+export type TSpecialtyUpdate = Partial<TSpecialtyCreate> & {
+  specialtyId: string;
+};
