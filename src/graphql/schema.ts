@@ -1,3 +1,4 @@
+import { Appointment } from "./appointment";
 import { Doctor } from "./doctor";
 import { DoctorSchedule } from "./doctor-schedule";
 import { Patient } from "./patient";
@@ -12,6 +13,7 @@ export const typeDefs = `#graphql
   ${Specialty.typeDefs}
   ${DoctorSchedule.typeDefs}
   ${TimeSlot.typeDefs}
+  ${Appointment.typeDefs}
 
   type GenericSuccessResponse {
     success: Boolean!
@@ -28,5 +30,6 @@ export const typeDefs = `#graphql
     ${Specialty.mutations}
     ${DoctorSchedule.mutations}
     ${TimeSlot.mutations}
+    ${Appointment.mutations}
   }
 `;
