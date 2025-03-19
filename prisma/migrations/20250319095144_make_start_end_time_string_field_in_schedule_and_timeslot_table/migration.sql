@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE "doctor_schedules" ALTER COLUMN "start_time" DROP DEFAULT,
+ALTER COLUMN "start_time" SET DATA TYPE TEXT,
+ALTER COLUMN "end_time" DROP DEFAULT,
+ALTER COLUMN "end_time" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "time_slots" ALTER COLUMN "start_time" SET DATA TYPE TEXT,
+ALTER COLUMN "end_time" SET DATA TYPE TEXT;

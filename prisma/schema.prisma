@@ -91,8 +91,8 @@ model DoctorSchedule {
   id          String   @id @default(uuid())
   doctorId    String
   day         DAY
-  startTime   DateTime @default(now()) @map("start_time")
-  endTime     DateTime @default(dbgenerated("now() + interval '1 hour'")) @map("end_time")
+  startTime   String   @map("start_time")
+  endTime     String   @map("end_time")
   isAvailable Boolean  @default(true) @map("is_available")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -109,8 +109,8 @@ model TimeSlot {
   doctorId  String
   day       DAY
   slotDate  DateTime @default(now())
-  startTime DateTime @map("start_time")
-  endTime   DateTime @map("end_time")
+  startTime String   @map("start_time")
+  endTime   String   @map("end_time")
   isBooked  Boolean  @default(false) @map("is_booked")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
