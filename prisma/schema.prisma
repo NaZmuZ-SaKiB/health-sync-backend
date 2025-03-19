@@ -94,6 +94,8 @@ model DoctorSchedule {
   startTime   DateTime @default(now()) @map("start_time")
   endTime     DateTime @default(dbgenerated("now() + interval '1 hour'")) @map("end_time")
   isAvailable Boolean  @default(true) @map("is_available")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
   doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
@@ -110,6 +112,8 @@ model TimeSlot {
   startTime DateTime @map("start_time")
   endTime   DateTime @map("end_time")
   isBooked  Boolean  @default(false) @map("is_booked")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
   doctor      Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
