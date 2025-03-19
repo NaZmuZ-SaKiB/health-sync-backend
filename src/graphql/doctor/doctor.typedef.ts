@@ -13,7 +13,7 @@ export const typeDefs = `#graphql
         updatedAt: String!
 
         # Relations
-        # schedules: [DoctorSchedule!]!
+        schedules: [DoctorSchedule!]!
         # timeSlots: [TimeSlot!]!
         # appointments: [Appointment!]!
         # reviews: [Review!]!
