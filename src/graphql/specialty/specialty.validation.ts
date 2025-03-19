@@ -9,4 +9,8 @@ const create = z.object({
   icon: z.string().url({ message: "Invalid URL for icon." }).optional(),
 });
 
-export const validations = { create };
+const update = create.partial().extend({
+  specialtyId: z.string().min(1, { message: "Specialty ID is required." }),
+});
+
+export const validations = { create, update };
