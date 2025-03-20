@@ -13,4 +13,10 @@ export const typeDefs = `#graphql
         # Relations
         appointment: Appointment
     }
+
+    input TimeSlotCreateInput {
+        slotDate: String!
+        startTime: String!
+        endTime: String!
+    }
 `;
