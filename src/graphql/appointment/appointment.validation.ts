@@ -1,8 +1,21 @@
+import { APPOINTMENT_STATUS } from "@prisma/client";
 import moment from "moment";
 import { z } from "zod";
 
 const yearFormat = "DD-MM-YYYY";
 const timeFormat = "HH:mm";
+
+const status = z.enum(
+  Object.values(APPOINTMENT_STATUS) as [
+    APPOINTMENT_STATUS,
+    ...APPOINTMENT_STATUS[]
+  ],
+  {
+    errorMap: () => ({
+      message: "Invalid Appointment Status.",
+    }),
+  }
+);
 
 const create = z.object({
   scheduleId: z.string().min(1, { message: "Schedule ID is required" }),
@@ -57,4 +70,10 @@ const create = z.object({
     ),
 });
 
-export const validations = { create };
+const update = z.object({
+  appointmentId: z.string().min(1, { message: "Appointment ID is required" }),
+  status: status.optional(),
+  notes: z.string().optional(),
+});
+
+export const validations = { create, update };
