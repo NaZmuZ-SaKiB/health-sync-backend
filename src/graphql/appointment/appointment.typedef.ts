@@ -11,7 +11,7 @@ export const typeDefs = `#graphql
         updatedAt: String!
 
         # Relations
-        # payment: Payment
+        payment: Payment
     }
 
     enum APPOINTMENT_STATUS {
