@@ -118,8 +118,8 @@ model TimeSlot {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  doctor      Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  appointment Appointment?
+  doctor       Doctor        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
 
   @@unique([doctorId, slotDate, startTime])
   @@map("time_slots")
@@ -129,7 +129,7 @@ model Appointment {
   id        String             @id @default(uuid())
   patientId String
   doctorId  String
-  slotId    String             @unique
+  slotId    String
   status    APPOINTMENT_STATUS @default(SCHEDULED)
   reason    String?
   notes     String?
