@@ -1,4 +1,10 @@
-import { APPOINTMENT_STATUS, Prisma, ROLE, TimeSlot } from "@prisma/client";
+import {
+  APPOINTMENT_STATUS,
+  PAYMENT_STATUS,
+  Prisma,
+  ROLE,
+  TimeSlot,
+} from "@prisma/client";
 import { TContext } from "../../types";
 import auth from "../../utils/auth";
 import {
@@ -47,6 +53,11 @@ const mutations = {
         startTime: true,
         endTime: true,
         isAvailable: true,
+        doctor: {
+          select: {
+            fee: true,
+          },
+        },
       },
     });
 
@@ -136,6 +147,15 @@ const mutations = {
             ? isTimeSlotExist?.id
             : (newTimeSlot?.id as string),
           ...appointmentData,
+          payment: {
+            create: {
+              amount: schedule.doctor.fee as number,
+              status:
+                schedule.doctor.fee === 0
+                  ? PAYMENT_STATUS.COMPLETED
+                  : PAYMENT_STATUS.PENDING,
+            },
+          },
         },
       });
     });
