@@ -11,7 +11,7 @@ export const typeDefs = `#graphql
         updatedAt: String!
 
         # Relations
-        appointment: Appointment
+        appointment: [Appointment!]!
     }
 
     input TimeSlotCreateInput {
