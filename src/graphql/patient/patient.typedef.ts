@@ -3,7 +3,7 @@ export const typeDefs = `#graphql
         id: ID!
         emergencyContactName: String
         emergencyContactPhone: String
-        bloodGroup: BloodGroup!
+        bloodGroup: BloodGroup
         allergies: String
         createdAt: String!
         updatedAt: String!
