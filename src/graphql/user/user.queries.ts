@@ -1,3 +1,3 @@
 export const queries = `#graphql
-    me: String!
+    me: User!
 `;
