@@ -6,6 +6,8 @@ export const typeDefs = `#graphql
         paymentDate: String!
         transactionId: String
         status: PAYMENT_STATUS!
+        createdAt: String!
+        updatedAt: String!
     }
 
     enum PAYMENT_STATUS {
