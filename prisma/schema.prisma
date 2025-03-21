@@ -137,10 +137,11 @@ model Appointment {
   updatedAt DateTime           @updatedAt @map("updated_at")
 
   // Relations
-  patient  Patient  @relation(fields: [patientId], references: [id])
-  doctor   Doctor   @relation(fields: [doctorId], references: [id])
-  timeSlot TimeSlot @relation(fields: [slotId], references: [id])
+  patient  Patient        @relation(fields: [patientId], references: [id])
+  doctor   Doctor         @relation(fields: [doctorId], references: [id])
+  timeSlot TimeSlot       @relation(fields: [slotId], references: [id])
   payment  Payment?
+  report   MedicalReport?
 
   @@map("appointments")
 }
@@ -160,19 +161,21 @@ model Payment {
 }
 
 model MedicalReport {
-  id         String      @id @default(uuid())
-  patientId  String
-  title      String
-  reportType REPORT_TYPE @map("report_type")
-  reportDate DateTime    @default(now()) @map("report_date")
-  fileUrl    String?     @map("file_url")
-  notes      String?
+  id            String      @id @default(uuid())
+  patientId     String
+  appointmentId String?     @unique
+  title         String
+  reportType    REPORT_TYPE @map("report_type")
+  reportDate    DateTime    @default(now()) @map("report_date")
+  fileUrl       String?     @map("file_url")
+  notes         String?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient     Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
 
   @@map("medical_reports")
 }
