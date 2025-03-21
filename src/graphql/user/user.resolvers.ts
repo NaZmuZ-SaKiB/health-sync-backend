@@ -6,10 +6,39 @@ import { TContext } from "../../types";
 import { jwtHelpers } from "../../utils/jwtHelper";
 import { TUserCretaeInput, TUserSigninInput } from "./user.type";
 import bcrypt from "bcrypt";
-import { ROLE } from "@prisma/client";
+import { ROLE, User as TUser } from "@prisma/client";
+import auth from "../../utils/auth";
 
 const queries = {
-  me: () => "Hello, World!",
+  me: async (_: any, args: any, { prisma, currentUser }: TContext) => {
+    await auth(prisma, currentUser);
+
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser?.id },
+      omit: {
+        password: true,
+        passwordResetCode: true,
+      },
+    });
+
+    return user;
+  },
+};
+
+const relationalQuery = {
+  User: {
+    doctor: async (parent: TUser, _: any, { prisma }: TContext) => {
+      return await prisma.doctor.findUnique({
+        where: { userId: parent.id },
+      });
+    },
+
+    patient: async (parent: TUser, _: any, { prisma }: TContext) => {
+      return await prisma.patient.findUnique({
+        where: { userId: parent.id },
+      });
+    },
+  },
 };
 
 const mutations = {
@@ -119,4 +148,4 @@ const mutations = {
   },
 };
 
-export const resolvers = { queries, mutations };
+export const resolvers = { queries, mutations, relationalQuery };
