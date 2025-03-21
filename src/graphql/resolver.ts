@@ -5,6 +5,7 @@ import { MedicalReport } from "./medical-report";
 import { Notification } from "./notification";
 import { Patient } from "./patient";
 import { Payment } from "./payment";
+import { Review } from "./review";
 import { Specialty } from "./specialty";
 import { TimeSlot } from "./time-slot";
 import { User } from "./user";
@@ -24,5 +25,6 @@ export const resolvers = {
     ...Payment.resolvers.mutations,
     ...MedicalReport.resolvers.mutations,
     ...Notification.resolvers.mutations,
+    ...Review.resolvers.mutations,
   },
 };
