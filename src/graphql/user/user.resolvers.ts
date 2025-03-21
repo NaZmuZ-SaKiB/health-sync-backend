@@ -23,6 +23,24 @@ const queries = {
 
     return user;
   },
+
+  userById: async (
+    _: any,
+    args: { id: string },
+    { prisma, currentUser }: TContext
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const user = await prisma.user.findUnique({
+      where: { id: args.id },
+      omit: {
+        password: true,
+        passwordResetCode: true,
+      },
+    });
+
+    return user;
+  },
 };
 
 const relationalQuery = {
