@@ -27,4 +27,5 @@ export const resolvers = {
     ...Notification.resolvers.mutations,
     ...Review.resolvers.mutations,
   },
+  ...User.resolvers.relationalQuery,
 };
