@@ -11,11 +11,4 @@ export const typeDefs = `#graphql
         # Relations 
         appointment: Appointment!
     }
-
-    enum PAYMENT_STATUS {
-        PENDING
-        COMPLETED
-        FAILED
-        REFUNDED
-    }
 `;

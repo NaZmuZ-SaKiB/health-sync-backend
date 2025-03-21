@@ -9,6 +9,7 @@ import { Review } from "./review";
 import { Specialty } from "./specialty";
 import { TimeSlot } from "./time-slot";
 import { User } from "./user";
+import { enumTypedef } from "./enum";
 
 export const typeDefs = `#graphql
   ${User.typeDefs}
@@ -22,6 +23,7 @@ export const typeDefs = `#graphql
   ${MedicalReport.typeDefs}
   ${Notification.typeDefs}
   ${Review.typeDefs}
+  ${enumTypedef}
 
   type GenericSuccessResponse {
     success: Boolean!

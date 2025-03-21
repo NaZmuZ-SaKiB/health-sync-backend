@@ -19,19 +19,6 @@ export const typeDefs = `#graphql
         doctor: Doctor
     }
 
-    enum Gender {
-        MALE
-        FEMALE
-        OTHER
-    }
-
-    enum Role {
-        PATIENT
-        DOCTOR
-        ADMIN
-        SUPER_ADMIN
-    }
-
     type AuthResponse {
         success: Boolean!
         token: String!

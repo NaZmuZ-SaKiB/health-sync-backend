@@ -13,10 +13,4 @@ export const typeDefs = `#graphql
         patient: Patient!
         appointment: Appointment
     }
-
-    enum REPORT_TYPE {
-        LAB_REPORT
-        PRESCRIPTION
-        DIAGNOSIS
-    }
 `;

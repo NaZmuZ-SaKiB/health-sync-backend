@@ -16,13 +16,6 @@ export const typeDefs = `#graphql
         review: Review
     }
 
-    enum APPOINTMENT_STATUS {
-        SCHEDULED
-        COMPLETED
-        CANCELLED
-        NO_SHOW
-    }
-
     input AppointmentCreateInput {
         scheduleId: String!
         reason: String

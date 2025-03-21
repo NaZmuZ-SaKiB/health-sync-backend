@@ -8,12 +8,4 @@ export const typeDefs = `#graphql
         type: NOTIFICATION_TYPE!
         createdAt: String!
     }
-
-    enum NOTIFICATION_TYPE {
-        NEW_APPOINTMENT
-        APPOINTMENT_REMINDER
-        PAYMENT_CONFIRMATION
-        REPORT_AVAILABLE
-        NORMAL
-    }
 `;

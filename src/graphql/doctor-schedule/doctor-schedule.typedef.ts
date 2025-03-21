@@ -12,14 +12,4 @@ export const typeDefs = `#graphql
         # Relations 
         doctor: Doctor!
     }
-
-    enum DAY {
-        MONDAY
-        TUESDAY
-        WEDNESDAY
-        THURSDAY
-        FRIDAY
-        SATURDAY
-        SUNDAY
-    }
 `;
