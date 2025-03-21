@@ -12,6 +12,7 @@ export const typeDefs = `#graphql
 
         # Relations
         payment: Payment
+        report: MedicalReport
     }
 
     enum APPOINTMENT_STATUS {
