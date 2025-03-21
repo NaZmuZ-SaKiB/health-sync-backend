@@ -1,8 +1,6 @@
 export const typeDefs = `#graphql
     type MedicalReport {
         id: ID!
-        patient: Patient!
-        appointment: Appointment
         title: String!
         reportType: REPORT_TYPE!
         reportDate: String!
@@ -10,6 +8,10 @@ export const typeDefs = `#graphql
         notes: String
         createdAt: String!
         updatedAt: String!
+
+        # Relations
+        patient: Patient!
+        appointment: Appointment
     }
 
     enum REPORT_TYPE {

@@ -1,23 +1,23 @@
 export const typeDefs = `#graphql
     type Doctor {
         id: ID!
-        user: User!
-        specialty: Specialty!
         licenseNumber: String!
         bio: String
         qualification: String!
         isVerified: Boolean!
         experienceYears: Int!
         fee: Int
+        averageRating: Float!
         createdAt: String!
         updatedAt: String!
 
         # Relations
+        user: User!
+        specialty: Specialty!
         schedules: [DoctorSchedule!]!
         timeSlots: [TimeSlot!]!
         appointments: [Appointment!]!
-        # reviews: [Review!]!
-        # averageRating: Float!
+        reviews: [Review!]!
     }
 
     input DoctorCreateInput {

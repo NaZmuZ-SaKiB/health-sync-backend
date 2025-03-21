@@ -1,9 +1,6 @@
 export const typeDefs = `#graphql
     type Appointment {
         id: ID!
-        patient: Patient!
-        doctor: Doctor!
-        timeSlot: TimeSlot!
         status: APPOINTMENT_STATUS!
         reason: String
         notes: String
@@ -11,8 +8,12 @@ export const typeDefs = `#graphql
         updatedAt: String!
 
         # Relations
+        patient: Patient!
+        doctor: Doctor!
+        timeSlot: TimeSlot!
         payment: Payment
         report: MedicalReport
+        review: Review
     }
 
     enum APPOINTMENT_STATUS {

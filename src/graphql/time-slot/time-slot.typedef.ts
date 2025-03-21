@@ -1,7 +1,6 @@
 export const typeDefs = `#graphql
     type TimeSlot {
         id:ID!
-        doctor: Doctor!
         day: DAY!
         slotDate: String!
         startTime: String!
@@ -11,7 +10,8 @@ export const typeDefs = `#graphql
         updatedAt: String!
 
         # Relations
-        appointment: [Appointment!]!
+        doctor: Doctor!
+        appointments: [Appointment!]!
     }
 
     input TimeSlotCreateInput {

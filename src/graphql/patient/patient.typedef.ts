@@ -1,7 +1,6 @@
 export const typeDefs = `#graphql
     type Patient {
         id: ID!
-        user: User!
         emergencyContactName: String
         emergencyContactPhone: String
         bloodGroup: BloodGroup!
@@ -10,6 +9,7 @@ export const typeDefs = `#graphql
         updatedAt: String!
         
         # Relations
+        user: User!
         appointments: [Appointment!]!
         medicalReports: [MedicalReport!]!
     }
