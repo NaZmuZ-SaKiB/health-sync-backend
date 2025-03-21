@@ -1,6 +1,7 @@
 import { Appointment } from "./appointment";
 import { Doctor } from "./doctor";
 import { DoctorSchedule } from "./doctor-schedule";
+import { MedicalReport } from "./medical-report";
 import { Patient } from "./patient";
 import { Payment } from "./payment";
 import { Specialty } from "./specialty";
@@ -20,5 +21,6 @@ export const resolvers = {
     ...TimeSlot.resolvers.mutations,
     ...Appointment.resolvers.mutations,
     ...Payment.resolvers.mutations,
+    ...MedicalReport.resolvers.mutations,
   },
 };
