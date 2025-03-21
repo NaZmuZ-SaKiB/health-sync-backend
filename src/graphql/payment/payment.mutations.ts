@@ -1,3 +1,7 @@
 export const mutations = `#graphql
-    # updatePatient(input: UserPatientUpdateInput!): GenericSuccessResponse!
+    updatePayment(
+        paymentId: String!
+        transactionId: String
+        status: PAYMENT_STATUS
+    ): GenericSuccessResponse!
 `;
