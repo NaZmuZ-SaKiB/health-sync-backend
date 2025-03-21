@@ -11,7 +11,7 @@ export const typeDefs = `#graphql
         
         # Relations
         appointments: [Appointment!]!
-        # medicalReports: [MedicalReport!]!
+        medicalReports: [MedicalReport!]!
     }
 
     enum BloodGroup {
@@ -42,6 +42,4 @@ export const typeDefs = `#graphql
         profilePicture: String
         patient: PatientUpdateInput
     }
-
-
 `;
