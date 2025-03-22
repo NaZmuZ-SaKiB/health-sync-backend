@@ -10,7 +10,7 @@ import { ROLE, User as TUser } from "@prisma/client";
 import auth from "../../utils/auth";
 
 const queries = {
-  me: async (_: any, args: any, { prisma, currentUser }: TContext) => {
+  me: async (_: any, __: any, { prisma, currentUser }: TContext) => {
     await auth(prisma, currentUser);
 
     const user = await prisma.user.findUnique({
@@ -40,6 +40,19 @@ const queries = {
     });
 
     return user;
+  },
+
+  users: async (_: any, __: any, { prisma, currentUser }: TContext) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const users = await prisma.user.findMany({
+      omit: {
+        password: true,
+        passwordResetCode: true,
+      },
+    });
+
+    return users;
   },
 };
 
