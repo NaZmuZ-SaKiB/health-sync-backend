@@ -25,6 +25,7 @@ const create = z.object({
   profilePicture: z.string().optional(),
   doctor: z.object({
     specialtyId: z.string().min(1, { message: "Specialty ID is required." }),
+    locationId: z.string().min(1, { message: "Location ID is required." }),
     licenseNumber: z
       .string()
       .min(1, { message: "License number is required." }),
@@ -61,6 +62,7 @@ const update = z.object({
   profilePicture: z.string().optional(),
   doctor: z
     .object({
+      locationId: z.string().nonempty().optional(),
       licenseNumber: z
         .string()
         .min(1, { message: "License number is required." })
