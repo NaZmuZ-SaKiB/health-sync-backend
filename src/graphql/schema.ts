@@ -33,6 +33,7 @@ export const typeDefs = `#graphql
 
   type Query {
     ${User.queries}
+    ${Specialty.queries}
   }
 
   type Mutation {
