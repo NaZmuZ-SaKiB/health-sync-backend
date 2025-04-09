@@ -14,6 +14,7 @@ export const typeDefs = `#graphql
         # Relations
         user: User!
         specialty: Specialty!
+        Location: Location!
         schedules: [DoctorSchedule!]!
         timeSlots: [TimeSlot!]!
         appointments: [Appointment!]!
