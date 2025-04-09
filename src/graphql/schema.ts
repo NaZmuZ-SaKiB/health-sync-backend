@@ -10,6 +10,7 @@ import { Specialty } from "./specialty";
 import { TimeSlot } from "./time-slot";
 import { User } from "./user";
 import { enumTypedef } from "./enum";
+import { Location } from "./location";
 
 export const typeDefs = `#graphql
   ${User.typeDefs}
@@ -21,6 +22,7 @@ export const typeDefs = `#graphql
   ${Appointment.typeDefs}
   ${Payment.typeDefs}
   ${MedicalReport.typeDefs}
+  ${Location.typeDefs}
   ${Notification.typeDefs}
   ${Review.typeDefs}
   ${enumTypedef}
@@ -43,6 +45,7 @@ export const typeDefs = `#graphql
     ${Appointment.mutations}
     ${Payment.mutations}
     ${MedicalReport.mutations}
+    ${Location.mutations}
     ${Notification.mutations}
     ${Review.mutations}
   }
