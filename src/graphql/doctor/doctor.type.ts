@@ -12,6 +12,7 @@ export type TDoctorCreateInput = {
     profilePicture?: string;
     doctor: {
       specialtyId: string;
+      locationId: string;
       licenseNumber: string;
       bio?: string;
       qualification: string;
