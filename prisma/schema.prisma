@@ -190,6 +190,7 @@ model Location {
   name        String
   mapUrl      String  @map("map_url")
   address     String
+  phoneNumber String? @map("phone_number")
   description String?
   image       String?
 
@@ -198,6 +199,8 @@ model Location {
 
   // Relations
   doctors Doctor[]
+
+  @@map("locations")
 }
 
 model Notification {
