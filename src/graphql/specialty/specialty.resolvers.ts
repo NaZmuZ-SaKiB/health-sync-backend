@@ -6,7 +6,13 @@ import { Specialty } from ".";
 import AppError from "../../errors/AppError";
 import status from "http-status";
 
-const queries = {};
+const queries = {
+  specialties: async (_: any, __: any, { prisma }: TContext) => {
+    const specialties = await prisma.specialty.findMany({});
+
+    return specialties;
+  },
+};
 
 const mutations = {
   createSpecialty: async (
