@@ -4,7 +4,13 @@ import auth from "../../utils/auth";
 import { TLocationCreateInput } from "./location.type";
 import { Location } from ".";
 
-const queries = {};
+const queries = {
+  locations: async (_: any, __: any, { prisma }: TContext) => {
+    const locations = await prisma.location.findMany({});
+
+    return locations;
+  },
+};
 
 const mutations = {
   createLocation: async (

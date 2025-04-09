@@ -15,6 +15,7 @@ export const resolvers = {
   Query: {
     ...User.resolvers.queries,
     ...Specialty.resolvers.queries,
+    ...Location.resolvers.queries,
   },
   Mutation: {
     ...User.resolvers.mutations,
