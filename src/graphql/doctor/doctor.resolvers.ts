@@ -36,6 +36,15 @@ const mutations = {
       throw new AppError(status.NOT_FOUND, "Specialty not found.");
     }
 
+    const isLocationExists = await prisma.location.findUnique({
+      where: { id: parsedData.doctor.locationId },
+      select: { id: true },
+    });
+
+    if (!isLocationExists) {
+      throw new AppError(status.NOT_FOUND, "Location not found.");
+    }
+
     const hashedPassword = await hash(
       config.doctor_default_password as string,
       Number(config.bcrypt_salt_rounds)
