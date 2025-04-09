@@ -17,7 +17,7 @@ model User {
   lastName            String?   @map("last_name")
   phoneNumber         String?   @default("") @map("phone_number")
   address             String?
-  dateOfBirth         DateTime? @map("date_of_birth")
+  dateOfBirth         String?   @map("date_of_birth")
   gender              GENDER?
   profilePicture      String?   @map("profile_picture")
   role                ROLE      @default(PATIENT)
