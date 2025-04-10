@@ -207,6 +207,7 @@ model Location {
 model Image {
   id           String @id @default(uuid())
   userId       String @unique
+  userType     ROLE   @map("user_type")
   name         String
   publicId     String @map("public_id")
   height       Int
