@@ -1,7 +1,7 @@
 export const typeDefs = `#graphql
     type Image {
         id: ID!
-        userType: ROLE!
+        userType: Role!
         name: String!
         publicId: String!
         height: Int!
