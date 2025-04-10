@@ -17,6 +17,7 @@ export const typeDefs = `#graphql
         # Relations
         patient: Patient
         doctor: Doctor
+        images: [Image!]!
     }
 
     type AuthResponse {
