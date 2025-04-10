@@ -23,6 +23,7 @@ export const typeDefs = `#graphql
 
     input DoctorCreateInput {
         specialtyId: String!
+        locationId: String!
         licenseNumber: String!
         bio: String
         qualification: String!
