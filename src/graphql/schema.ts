@@ -11,6 +11,7 @@ import { TimeSlot } from "./time-slot";
 import { User } from "./user";
 import { enumTypedef } from "./enum";
 import { Location } from "./location";
+import { Image } from "./image";
 
 export const typeDefs = `#graphql
   ${User.typeDefs}
@@ -23,6 +24,7 @@ export const typeDefs = `#graphql
   ${Payment.typeDefs}
   ${MedicalReport.typeDefs}
   ${Location.typeDefs}
+  ${Image.typeDefs}
   ${Notification.typeDefs}
   ${Review.typeDefs}
   ${enumTypedef}
@@ -35,6 +37,7 @@ export const typeDefs = `#graphql
     ${User.queries}
     ${Specialty.queries}
     ${Location.queries}
+    ${Image.queries}
   }
 
   type Mutation {
@@ -48,6 +51,7 @@ export const typeDefs = `#graphql
     ${Payment.mutations}
     ${MedicalReport.mutations}
     ${Location.mutations}
+    ${Image.mutations}
     ${Notification.mutations}
     ${Review.mutations}
   }
