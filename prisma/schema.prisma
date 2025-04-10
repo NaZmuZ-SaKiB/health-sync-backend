@@ -28,6 +28,7 @@ model User {
   // Relations
   patient Patient?
   doctor  Doctor?
+  images  Image[]
 
   @@map("users")
 }
@@ -201,6 +202,27 @@ model Location {
   doctors Doctor[]
 
   @@map("locations")
+}
+
+model Image {
+  id           String @id @default(uuid())
+  userId       String @unique
+  name         String
+  publicId     String @map("public_id")
+  height       Int
+  width        Int
+  format       String
+  url          String
+  secureUrl    String @map("secure_url")
+  thumbnailUrl String @map("thumbnail_url")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("images")
 }
 
 model Notification {
