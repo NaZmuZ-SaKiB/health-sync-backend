@@ -4,8 +4,8 @@ export const typeDefs = `#graphql
         name: String!
         description: String
         icon: String
-        createdAt: String
-        updatedAt: String
+        createdAt: String!
+        updatedAt: String!
 
         # Relations
         doctors: [Doctor!]!
