@@ -1,3 +1,10 @@
 export const queries = `#graphql
-    specialties: [Specialty!]!
+    getAllSpecialties(
+        page: String
+        limit: String
+        searchTerm: String
+        sortBy: String
+        sortOrder: String
+        name: String
+    ): SpecialtiesResponse!
 `;
