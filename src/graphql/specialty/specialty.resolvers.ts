@@ -8,7 +8,11 @@ import status from "http-status";
 
 const queries = {
   specialties: async (_: any, __: any, { prisma }: TContext) => {
-    const specialties = await prisma.specialty.findMany({});
+    const specialties = await prisma.specialty.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
     return specialties;
   },
