@@ -17,3 +17,11 @@ export type TGenericErrorResponse = {
   message: string;
   errorType: string;
 };
+
+export type TFilters = {
+  page?: string;
+  limit?: string;
+  searchTerm?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+} & Record<string, any>;
