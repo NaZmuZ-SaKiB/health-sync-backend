@@ -101,6 +101,44 @@ const mutations = {
 
     return { success: true };
   },
+
+  removeSpecialties: async (
+    _: any,
+    args: { ids: string[] },
+    { prisma, currentUser }: TContext
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const parsedData = await Specialty.validations.remove.parseAsync(args);
+
+    const specialties = await prisma.specialty.findMany({
+      where: { id: { in: parsedData.ids } },
+      include: {
+        _count: {
+          select: {
+            doctors: true,
+          },
+        },
+      },
+    });
+
+    specialties.forEach((specialty) => {
+      if (specialty._count.doctors > 0) {
+        throw new AppError(
+          status.BAD_REQUEST,
+          `Specialty ${specialty.name} is assigned to doctors.`
+        );
+      }
+    });
+
+    const specialtiesToDelete = specialties.map((specialty) => specialty.id);
+
+    await prisma.specialty.deleteMany({
+      where: { id: { in: specialtiesToDelete } },
+    });
+
+    return { success: true };
+  },
 };
 
 export const resolvers = { queries, mutations };
