@@ -1,20 +1,52 @@
-import { ROLE } from "@prisma/client";
-import { TContext } from "../../types";
+import { Prisma, ROLE } from "@prisma/client";
+import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
 import { TSpecialtyCreate, TSpecialtyUpdate } from "./specialty.type";
 import { Specialty } from ".";
 import AppError from "../../errors/AppError";
 import status from "http-status";
+import calculatePagination from "../../utils/calculatePagination";
 
 const queries = {
-  specialties: async (_: any, __: any, { prisma }: TContext) => {
+  getAllSpecialties: async (
+    _: any,
+    queries: TFilters,
+    { prisma }: TContext
+  ) => {
+    const { page, limit, skip, sortBy, sortOrder } =
+      calculatePagination(queries);
+
+    const conditions: Prisma.SpecialtyWhereInput = {};
+
+    if (queries?.searchTerm) {
+      conditions.OR = ["name"].map((field) => ({
+        [field]: {
+          contains: queries?.searchTerm,
+          mode: "insensitive",
+        },
+      }));
+    }
+
     const specialties = await prisma.specialty.findMany({
+      where: conditions,
       orderBy: {
-        createdAt: "desc",
+        [sortBy]: sortOrder,
       },
+      skip,
+      take: limit,
     });
 
-    return specialties;
+    const total = await prisma.specialty.count({
+      where: conditions,
+    });
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return { specialties, meta };
   },
 };
 
