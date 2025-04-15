@@ -5,6 +5,5 @@ export const queries = `#graphql
         searchTerm: String
         sortBy: String
         sortOrder: String
-        name: String
     ): SpecialtiesResponse!
 `;
