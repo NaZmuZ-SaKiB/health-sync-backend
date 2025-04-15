@@ -13,4 +13,10 @@ const update = create.partial().extend({
   specialtyId: z.string().min(1, { message: "Specialty ID is required." }),
 });
 
-export const validations = { create, update };
+const remove = z.object({
+  ids: z
+    .array(z.string().nonempty({ message: "ID is required." }))
+    .min(1, { message: "At least one ID is required." }),
+});
+
+export const validations = { create, update, remove };
