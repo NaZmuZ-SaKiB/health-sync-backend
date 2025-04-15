@@ -10,4 +10,10 @@ export const typeDefs = `#graphql
         # Relations
         doctors: [Doctor!]!
     }
+
+    # Return Types 
+    type SpecialtiesResponse {
+        specialties: [Specialty!]!
+        meta: Meta!
+    }
 `;
