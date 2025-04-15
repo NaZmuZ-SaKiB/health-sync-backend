@@ -33,6 +33,12 @@ export const typeDefs = `#graphql
     success: Boolean!
   }
 
+  type Meta {
+    page: Int!
+    limit: Int!
+    total: Int!
+  }
+
   type Query {
     ${User.queries}
     ${Specialty.queries}
