@@ -9,4 +9,14 @@ const create = z.object({
   image: z.string().optional(),
 });
 
-export const validations = { create };
+const update = create.partial().extend({
+  locationId: z.string().min(1, { message: "Location ID is required." }),
+});
+
+const remove = z.object({
+  ids: z
+    .array(z.string().nonempty({ message: "ID is required." }))
+    .min(1, { message: "At least one ID is required." }),
+});
+
+export const validations = { create, update, remove };
