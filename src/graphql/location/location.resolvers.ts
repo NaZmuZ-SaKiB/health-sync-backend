@@ -1,14 +1,48 @@
-import { ROLE } from "@prisma/client";
-import { TContext } from "../../types";
+import { Prisma, ROLE } from "@prisma/client";
+import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
 import { TLocationCreateInput } from "./location.type";
 import { Location } from ".";
+import calculatePagination from "../../utils/calculatePagination";
 
 const queries = {
-  locations: async (_: any, __: any, { prisma }: TContext) => {
-    const locations = await prisma.location.findMany({});
+  getAllLocations: async (_: any, queries: TFilters, { prisma }: TContext) => {
+    const { page, limit, skip, sortBy, sortOrder } =
+      calculatePagination(queries);
 
-    return locations;
+    const conditions: Prisma.LocationWhereInput = {};
+
+    const searchableFields = ["name", "mapUrl", "address", "phoneNumber"];
+
+    if (queries?.searchTerm) {
+      conditions.OR = searchableFields.map((field) => ({
+        [field]: {
+          contains: queries?.searchTerm,
+          mode: "insensitive",
+        },
+      }));
+    }
+
+    const locations = await prisma.location.findMany({
+      where: conditions,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      skip,
+      take: limit,
+    });
+
+    const total = await prisma.location.count({
+      where: conditions,
+    });
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return { locations, meta };
   },
 };
 
