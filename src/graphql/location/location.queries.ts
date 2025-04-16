@@ -1,3 +1,9 @@
 export const queries = `#graphql
-    locations: [Location!]!
+    getAllLocations(
+        page: String
+        limit: String
+        searchTerm: String
+        sortBy: String
+        sortOrder: String
+    ): LocationsResponse!
 `;
