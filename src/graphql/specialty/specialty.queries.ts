@@ -6,4 +6,6 @@ export const queries = `#graphql
         sortBy: String
         sortOrder: String
     ): SpecialtiesResponse!
+
+    specialty(id: String!): Specialty!
 `;
