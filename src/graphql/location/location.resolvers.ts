@@ -1,9 +1,11 @@
 import { Prisma, ROLE } from "@prisma/client";
 import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
-import { TLocationCreateInput } from "./location.type";
+import { TLocationCreateInput, TLocationUpdateInput } from "./location.type";
 import { Location } from ".";
 import calculatePagination from "../../utils/calculatePagination";
+import AppError from "../../errors/AppError";
+import status from "http-status";
 
 const queries = {
   getAllLocations: async (_: any, queries: TFilters, { prisma }: TContext) => {
@@ -44,6 +46,18 @@ const queries = {
 
     return { locations, meta };
   },
+
+  location: async (_: any, args: { id: string }, { prisma }: TContext) => {
+    if (!args.id) {
+      throw new AppError(status.BAD_REQUEST, "Location ID is required.");
+    }
+
+    const location = await prisma.location.findUnique({
+      where: { id: args.id },
+    });
+
+    return location;
+  },
 };
 
 const mutations = {
@@ -58,6 +72,71 @@ const mutations = {
 
     await prisma.location.create({
       data: parsedData,
+    });
+
+    return { success: true };
+  },
+
+  updateLocation: async (
+    _: any,
+    args: TLocationUpdateInput,
+    { prisma, currentUser }: TContext
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const parsedData = await Location.validations.update.parseAsync(args);
+    const { locationId, ...updateData } = parsedData;
+
+    const location = await prisma.location.findUnique({
+      where: { id: locationId },
+      select: { id: true },
+    });
+
+    if (!location) {
+      throw new AppError(status.NOT_FOUND, "Location not found.");
+    }
+
+    await prisma.location.update({
+      where: { id: locationId },
+      data: updateData,
+    });
+
+    return { success: true };
+  },
+
+  removeLocations: async (
+    _: any,
+    args: { ids: string[] },
+    { prisma, currentUser }: TContext
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const parsedData = await Location.validations.remove.parseAsync(args);
+
+    const locations = await prisma.location.findMany({
+      where: { id: { in: parsedData.ids } },
+      include: {
+        _count: {
+          select: {
+            doctors: true,
+          },
+        },
+      },
+    });
+
+    locations.forEach((location) => {
+      if (location._count.doctors > 0) {
+        throw new AppError(
+          status.BAD_REQUEST,
+          `Location ${location.name} has doctors.`
+        );
+      }
+    });
+
+    const locationsToDelete = locations.map((location) => location.id);
+
+    await prisma.location.deleteMany({
+      where: { id: { in: locationsToDelete } },
     });
 
     return { success: true };
