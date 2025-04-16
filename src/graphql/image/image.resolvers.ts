@@ -28,7 +28,7 @@ const queries = {
 };
 
 const mutations = {
-  createLocation: async (
+  createImage: async (
     _: any,
     args: TImageCreateInput,
     { prisma, currentUser }: TContext
