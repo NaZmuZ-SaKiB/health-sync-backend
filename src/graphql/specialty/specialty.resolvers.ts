@@ -48,6 +48,19 @@ const queries = {
 
     return { specialties, meta };
   },
+
+  specialty: async (_: any, args: { id: string }, { prisma }: TContext) => {
+    console.log("id", args.id);
+    if (!args.id) {
+      throw new AppError(status.BAD_REQUEST, "Specialty ID is required.");
+    }
+
+    const specialty = await prisma.specialty.findUnique({
+      where: { id: args.id },
+    });
+
+    return specialty;
+  },
 };
 
 const mutations = {
