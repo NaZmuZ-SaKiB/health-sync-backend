@@ -50,7 +50,6 @@ const queries = {
   },
 
   specialty: async (_: any, args: { id: string }, { prisma }: TContext) => {
-    console.log("id", args.id);
     if (!args.id) {
       throw new AppError(status.BAD_REQUEST, "Specialty ID is required.");
     }
