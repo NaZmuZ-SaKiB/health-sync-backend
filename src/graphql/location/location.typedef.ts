@@ -16,7 +16,7 @@ export const typeDefs = `#graphql
 
     # Return Types 
     type LocationsResponse {
-        specialties: [Location!]!
+        locations: [Location!]!
         meta: Meta!
     }
 `;
