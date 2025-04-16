@@ -6,3 +6,7 @@ export type TLocationCreateInput = {
   description?: string;
   image?: string;
 };
+
+export type TLocationUpdateInput = Partial<TLocationCreateInput> & {
+  locationId: string;
+};
