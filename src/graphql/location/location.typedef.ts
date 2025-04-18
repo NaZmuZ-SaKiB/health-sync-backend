@@ -15,6 +15,11 @@ export const typeDefs = `#graphql
     }
 
     # Return Types 
+    type LocationCreateUpdateResponse {
+        success: Boolean!
+        location: Location
+    }
+
     type LocationsResponse {
         locations: [Location!]!
         meta: Meta!
