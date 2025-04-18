@@ -70,11 +70,11 @@ const mutations = {
 
     const parsedData = await Location.validations.create.parseAsync(args);
 
-    await prisma.location.create({
+    const location = await prisma.location.create({
       data: parsedData,
     });
 
-    return { success: true };
+    return location;
   },
 
   updateLocation: async (
@@ -87,21 +87,21 @@ const mutations = {
     const parsedData = await Location.validations.update.parseAsync(args);
     const { locationId, ...updateData } = parsedData;
 
-    const location = await prisma.location.findUnique({
+    const isLocation = await prisma.location.findUnique({
       where: { id: locationId },
       select: { id: true },
     });
 
-    if (!location) {
+    if (!isLocation) {
       throw new AppError(status.NOT_FOUND, "Location not found.");
     }
 
-    await prisma.location.update({
+    const location = await prisma.location.update({
       where: { id: locationId },
       data: updateData,
     });
 
-    return { success: true };
+    return location;
   },
 
   removeLocations: async (
