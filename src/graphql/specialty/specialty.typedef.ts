@@ -12,6 +12,11 @@ export const typeDefs = `#graphql
     }
 
     # Return Types 
+    type SpecialtyCreateUpdateResponse {
+        success: Boolean!
+        specialty: Specialty!
+    }
+
     type SpecialtiesResponse {
         specialties: [Specialty!]!
         meta: Meta!
