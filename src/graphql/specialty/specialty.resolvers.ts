@@ -81,9 +81,9 @@ const mutations = {
       throw new AppError(status.CONFLICT, "Specialty already exists.");
     }
 
-    await prisma.specialty.create({ data: parsedData });
+    const specialty = await prisma.specialty.create({ data: parsedData });
 
-    return { success: true };
+    return { success: true, specialty };
   },
 
   updateSpecialty: async (
@@ -97,21 +97,21 @@ const mutations = {
 
     const { specialtyId, ...updateData } = parsedData;
 
-    const specialty = await prisma.specialty.findUnique({
+    const isSpecialty = await prisma.specialty.findUnique({
       where: { id: parsedData.specialtyId },
       select: { id: true },
     });
 
-    if (!specialty) {
+    if (!isSpecialty) {
       throw new AppError(status.NOT_FOUND, "Specialty not found.");
     }
 
-    await prisma.specialty.update({
+    const specialty = await prisma.specialty.update({
       where: { id: parsedData.specialtyId },
       data: updateData,
     });
 
-    return { success: true };
+    return { success: true, specialty };
   },
 
   removeSpecialties: async (
