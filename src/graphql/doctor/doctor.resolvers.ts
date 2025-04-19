@@ -2,13 +2,89 @@ import { hash } from "bcrypt";
 import status from "http-status";
 import { Doctor } from ".";
 import AppError from "../../errors/AppError";
-import { TContext } from "../../types";
+import { TContext, TFilters } from "../../types";
 import { TDoctorCreateInput, TDoctorUpdateInput } from "./doctor.type";
 import config from "../../config";
 import { Prisma, ROLE } from "@prisma/client";
 import auth from "../../utils/auth";
+import calculatePagination from "../../utils/calculatePagination";
 
-const queries = {};
+const queries = {
+  getAllDoctors: async (_: any, queries: TFilters, { prisma }: TContext) => {
+    const { page, limit, skip, sortBy, sortOrder } =
+      calculatePagination(queries);
+
+    const andConditions: Prisma.Enumerable<Prisma.DoctorWhereInput> = [];
+
+    // handle search
+    const searchableFields = [
+      "firstName",
+      "lastName",
+      "email",
+      "phoneNumber",
+      "address",
+    ];
+
+    if (queries?.searchTerm) {
+      andConditions.push({
+        OR: [
+          ...searchableFields.map((field) => ({
+            user: {
+              [field]: {
+                contains: queries?.searchTerm,
+                mode: "insensitive",
+              },
+            },
+          })),
+          {
+            licenseNumber: {
+              contains: queries?.searchTerm,
+              mode: "insensitive",
+            },
+          },
+        ],
+      });
+    }
+
+    // handle filters
+    if (queries?.gender)
+      andConditions.push({ user: { gender: queries?.gender } });
+
+    if (queries?.specialty)
+      andConditions.push({ specialtyId: queries?.specialty });
+
+    if (queries?.location)
+      andConditions.push({ locationId: queries?.location });
+
+    if (queries?.isVerified)
+      andConditions.push({
+        isVerified: queries?.isVerified === "true" ? true : false,
+      });
+
+    const doctors = await prisma.doctor.findMany({
+      where: {
+        AND: andConditions,
+      },
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      skip,
+      take: limit,
+    });
+
+    const total = await prisma.doctor.count({
+      where: { AND: andConditions },
+    });
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return { doctors, meta };
+  },
+};
 
 const mutations = {
   createDoctor: async (
