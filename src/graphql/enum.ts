@@ -6,13 +6,13 @@ export const enumTypedef = `#graphql
         SUPER_ADMIN
     }
 
-    enum Gender {
+    enum GENDER {
         MALE
         FEMALE
         OTHER
     }
 
-    enum BloodGroup {
+    enum BLOOD_GROUP {
         A_POSITIVE
         A_NEGATIVE
         B_POSITIVE
@@ -21,6 +21,12 @@ export const enumTypedef = `#graphql
         O_NEGATIVE
         AB_POSITIVE
         AB_NEGATIVE
+    }
+
+    enum DOCTOR_VERIFICATION_STATUS {
+        PENDING
+        VERIFIED
+        REJECTED
     }
 
     enum APPOINTMENT_STATUS {
