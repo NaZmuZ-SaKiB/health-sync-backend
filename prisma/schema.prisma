@@ -55,7 +55,7 @@ model Doctor {
   id              String   @id @default(uuid())
   userId          String   @unique
   specialtyId     String
-  locationId      String?
+  locationId      String
   licenseNumber   String   @unique @map("license_number")
   bio             String?
   qualification   String
@@ -68,7 +68,7 @@ model Doctor {
   // Relations
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   specialty    Specialty        @relation(fields: [specialtyId], references: [id])
-  location     Location?        @relation(fields: [locationId], references: [id])
+  location     Location         @relation(fields: [locationId], references: [id])
   schedules    DoctorSchedule[]
   timeSlots    TimeSlot[]
   appointments Appointment[]
