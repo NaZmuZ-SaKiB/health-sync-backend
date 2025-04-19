@@ -21,6 +21,13 @@ export const typeDefs = `#graphql
         reviews: [Review!]!
     }
 
+    # Return Types
+    type DoctorsResponse {
+        meta: Meta!
+        doctors: [Doctor!]!
+    }
+
+    # Inputs 
     input DoctorCreateInput {
         specialtyId: String!
         locationId: String!
@@ -38,7 +45,7 @@ export const typeDefs = `#graphql
         phoneNumber: String!
         address: String!
         dateOfBirth: String!
-        gender: Gender!
+        gender: GENDER!
         profilePicture: String
         doctor: DoctorCreateInput!
     }
@@ -57,7 +64,7 @@ export const typeDefs = `#graphql
         phoneNumber: String
         address: String
         dateOfBirth: String
-        gender: Gender
+        gender: GENDER
         profilePicture: String
         doctor: DoctorUpdateInput
     }
