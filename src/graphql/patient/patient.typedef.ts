@@ -3,7 +3,7 @@ export const typeDefs = `#graphql
         id: ID!
         emergencyContactName: String
         emergencyContactPhone: String
-        bloodGroup: BloodGroup
+        bloodGroup: BLOOD_GROUP
         allergies: String
         createdAt: String!
         updatedAt: String!
@@ -17,7 +17,7 @@ export const typeDefs = `#graphql
     input PatientUpdateInput {
         emergencyContactName: String
         emergencyContactPhone: String
-        bloodGroup: BloodGroup
+        bloodGroup: BLOOD_GROUP
         allergies: String
     }
 
@@ -27,7 +27,7 @@ export const typeDefs = `#graphql
         phoneNumber: String
         address: String
         dateOfBirth: String
-        gender: Gender
+        gender: GENDER
         profilePicture: String
         patient: PatientUpdateInput
     }
