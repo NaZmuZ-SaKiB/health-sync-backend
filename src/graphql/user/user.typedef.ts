@@ -7,7 +7,7 @@ export const typeDefs = `#graphql
         phoneNumber: String
         address: String
         dateOfBirth: String
-        gender: Gender
+        gender: GENDER
         profilePicture: String
         role: Role!
         isActive: Boolean!
