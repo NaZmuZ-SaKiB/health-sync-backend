@@ -93,6 +93,18 @@ const relationalQuery = {
         where: { id: parent.userId },
       });
     },
+
+    specialty: async (parent: TDoctor, _: any, { prisma }: TContext) => {
+      return await prisma.specialty.findUnique({
+        where: { id: parent.specialtyId },
+      });
+    },
+
+    location: async (parent: TDoctor, _: any, { prisma }: TContext) => {
+      return await prisma.location.findUnique({
+        where: { id: parent.locationId },
+      });
+    },
   },
 };
 
