@@ -5,7 +5,7 @@ import AppError from "../../errors/AppError";
 import { TContext, TFilters } from "../../types";
 import { TDoctorCreateInput, TDoctorUpdateInput } from "./doctor.type";
 import config from "../../config";
-import { Prisma, ROLE } from "@prisma/client";
+import { Prisma, ROLE, Doctor as TDoctor } from "@prisma/client";
 import auth from "../../utils/auth";
 import calculatePagination from "../../utils/calculatePagination";
 
@@ -83,6 +83,16 @@ const queries = {
     };
 
     return { doctors, meta };
+  },
+};
+
+const relationalQuery = {
+  Doctor: {
+    user: async (parent: TDoctor, _: any, { prisma }: TContext) => {
+      return await prisma.user.findUnique({
+        where: { id: parent.userId },
+      });
+    },
   },
 };
 
@@ -170,4 +180,4 @@ const mutations = {
   },
 };
 
-export const resolvers = { queries, mutations };
+export const resolvers = { queries, mutations, relationalQuery };
