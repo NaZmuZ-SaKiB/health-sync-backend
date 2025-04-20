@@ -10,4 +10,6 @@ export const queries = `#graphql
         location: String
         isVerified: String
     ):DoctorsResponse!
+
+    doctor(id: String!): Doctor!
 `;
