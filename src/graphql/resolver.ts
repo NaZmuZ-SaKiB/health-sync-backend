@@ -15,6 +15,7 @@ import { User } from "./user";
 export const resolvers = {
   Query: {
     ...User.resolvers.queries,
+    ...Doctor.resolvers.queries,
     ...Specialty.resolvers.queries,
     ...Location.resolvers.queries,
     ...Image.resolvers.queries,
