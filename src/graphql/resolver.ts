@@ -36,4 +36,5 @@ export const resolvers = {
     ...Review.resolvers.mutations,
   },
   ...User.resolvers.relationalQuery,
+  ...Doctor.resolvers.relationalQuery,
 };
