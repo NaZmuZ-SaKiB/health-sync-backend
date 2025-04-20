@@ -84,6 +84,18 @@ const queries = {
 
     return { doctors, meta };
   },
+
+  doctor: async (_: any, args: { id: string }, { prisma }: TContext) => {
+    if (!args.id) {
+      throw new AppError(status.BAD_REQUEST, "Doctor ID is required.");
+    }
+
+    const doctor = await prisma.doctor.findUnique({
+      where: { id: args.id },
+    });
+
+    return doctor;
+  },
 };
 
 const relationalQuery = {
