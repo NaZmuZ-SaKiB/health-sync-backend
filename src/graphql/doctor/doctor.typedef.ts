@@ -56,7 +56,6 @@ export const typeDefs = `#graphql
         qualification: String
         experienceYears: Int
         fee: Int
-        verificationStatus: DOCTOR_VERIFICATION_STATUS
     }
     
     input UserDoctorUpdateInput {
