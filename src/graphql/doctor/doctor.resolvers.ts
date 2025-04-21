@@ -5,12 +5,7 @@ import AppError from "../../errors/AppError";
 import { TContext, TFilters } from "../../types";
 import { TDoctorCreateInput, TDoctorUpdateInput } from "./doctor.type";
 import config from "../../config";
-import {
-  DOCTOR_VERIFICATION_STATUS,
-  Prisma,
-  ROLE,
-  Doctor as TDoctor,
-} from "@prisma/client";
+import { Prisma, ROLE, Doctor as TDoctor } from "@prisma/client";
 import auth from "../../utils/auth";
 import calculatePagination from "../../utils/calculatePagination";
 
@@ -186,46 +181,11 @@ const mutations = {
     args: TDoctorUpdateInput,
     { prisma, currentUser }: TContext
   ) => {
-    await auth(prisma, currentUser, [
-      ROLE.DOCTOR,
-      ROLE.ADMIN,
-      ROLE.SUPER_ADMIN,
-    ]);
+    await auth(prisma, currentUser, [ROLE.DOCTOR]);
 
     const parsedData = await Doctor.validations.update.parseAsync(args.input);
 
-    if (
-      parsedData.doctor?.verificationStatus &&
-      currentUser?.role === ROLE.DOCTOR
-    ) {
-      throw new AppError(
-        status.FORBIDDEN,
-        "You are not allowed to update this field."
-      );
-    }
-
-    const { doctor: doctorUpdateData, ...user } = parsedData;
-    const doctor: Prisma.DoctorUpdateInput = {
-      ...doctorUpdateData,
-    };
-
-    if (parsedData.doctor?.verificationStatus) {
-      if (
-        parsedData.doctor.verificationStatus ===
-        DOCTOR_VERIFICATION_STATUS.VERIFIED
-      ) {
-        doctor.isVerified = true;
-      }
-
-      if (
-        parsedData.doctor.verificationStatus ===
-        DOCTOR_VERIFICATION_STATUS.REJECTED
-      ) {
-        doctor.isVerified = false;
-      }
-    } else {
-      delete doctor.verificationStatus;
-    }
+    const { doctor, ...user } = parsedData;
 
     const updateData: Prisma.UserUpdateInput = user;
 
