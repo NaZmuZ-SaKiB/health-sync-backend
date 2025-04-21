@@ -1,4 +1,4 @@
-import { GENDER } from "@prisma/client";
+import { DOCTOR_VERIFICATION_STATUS, GENDER } from "@prisma/client";
 import { z } from "zod";
 
 const gender = z.enum(Object.values(GENDER) as [GENDER, ...GENDER[]], {
@@ -6,6 +6,13 @@ const gender = z.enum(Object.values(GENDER) as [GENDER, ...GENDER[]], {
     message: "Invalid Gender.",
   }),
 });
+
+const verificationStatus = z.enum(
+  Object.values(DOCTOR_VERIFICATION_STATUS) as [
+    DOCTOR_VERIFICATION_STATUS,
+    ...DOCTOR_VERIFICATION_STATUS[]
+  ]
+);
 
 const create = z.object({
   email: z
@@ -82,6 +89,7 @@ const update = z.object({
         .number()
         .min(0, { message: "Fee must be a non-negative number." })
         .optional(),
+      verificationStatus: verificationStatus.optional(),
     })
     .optional(),
 });
