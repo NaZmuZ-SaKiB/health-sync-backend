@@ -37,6 +37,7 @@ export type TDoctorUpdateInput = {
       qualification?: string;
       experienceYears?: number;
       fee?: number;
+      verificationStatus?: string;
     };
   };
 };
