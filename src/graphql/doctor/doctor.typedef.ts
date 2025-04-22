@@ -4,10 +4,12 @@ export const typeDefs = `#graphql
         licenseNumber: String!
         bio: String
         qualification: String!
+        verificationStatus: DOCTOR_VERIFICATION_STATUS!
         isVerified: Boolean!
         experienceYears: Int!
         fee: Int
         averageRating: Float!
+        appliedDate: String!
         createdAt: String!
         updatedAt: String!
 
