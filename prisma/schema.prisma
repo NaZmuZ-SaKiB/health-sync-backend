@@ -63,6 +63,7 @@ model Doctor {
   isVerified         Boolean                    @default(false) @map("is_verified")
   experienceYears    Int
   fee                Int?                       @default(0)
+  isDeleted          Boolean                    @default(false) @map("is_deleted")
   appliedDate        DateTime                   @default(now()) @map("applied_date")
   createdAt          DateTime                   @default(now()) @map("created_at")
   updatedAt          DateTime                   @updatedAt @map("updated_at")
