@@ -5,7 +5,12 @@ import AppError from "../../errors/AppError";
 import { TContext, TFilters } from "../../types";
 import { TDoctorCreateInput, TDoctorUpdateInput } from "./doctor.type";
 import config from "../../config";
-import { Prisma, ROLE, Doctor as TDoctor } from "@prisma/client";
+import {
+  DOCTOR_VERIFICATION_STATUS,
+  Prisma,
+  ROLE,
+  Doctor as TDoctor,
+} from "@prisma/client";
 import auth from "../../utils/auth";
 import calculatePagination from "../../utils/calculatePagination";
 
@@ -197,6 +202,42 @@ const mutations = {
 
     await prisma.user.update({
       where: { id: currentUser?.id },
+      data: updateData,
+    });
+
+    return { success: true };
+  },
+
+  verifyDoctor: async (
+    _: any,
+    args: { doctorId: string; status: DOCTOR_VERIFICATION_STATUS },
+    { prisma, currentUser }: TContext
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const parsedData = await Doctor.validations.verify.parseAsync(args);
+
+    const doctor = await prisma.doctor.findUnique({
+      where: { id: parsedData.doctorId },
+      select: { id: true },
+    });
+
+    if (!doctor) {
+      throw new AppError(status.NOT_FOUND, "Doctor not found.");
+    }
+
+    const updateData: Prisma.DoctorUpdateInput = {
+      verificationStatus: parsedData.status,
+    };
+
+    if (parsedData.status === DOCTOR_VERIFICATION_STATUS.VERIFIED) {
+      updateData.isVerified = true;
+    } else if (parsedData.status === DOCTOR_VERIFICATION_STATUS.REJECTED) {
+      updateData.isVerified = false;
+    }
+
+    await prisma.doctor.update({
+      where: { id: parsedData.doctorId },
       data: updateData,
     });
 
