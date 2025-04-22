@@ -93,4 +93,9 @@ const update = z.object({
     .optional(),
 });
 
-export const validations = { create, update };
+const verify = z.object({
+  doctorId: z.string().nonempty({ message: "Doctor ID is required." }),
+  status: verificationStatus,
+});
+
+export const validations = { create, update, verify };
