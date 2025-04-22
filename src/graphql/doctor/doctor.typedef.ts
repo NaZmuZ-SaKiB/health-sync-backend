@@ -8,6 +8,7 @@ export const typeDefs = `#graphql
         isVerified: Boolean!
         experienceYears: Int!
         fee: Int
+        isDeleted: Boolean!
         averageRating: Float!
         appliedDate: String!
         createdAt: String!
