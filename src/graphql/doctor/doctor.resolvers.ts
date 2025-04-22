@@ -66,6 +66,12 @@ const queries = {
         isVerified: queries?.isVerified === "true" ? true : false,
       });
 
+    if (queries?.isDeleted) {
+      andConditions.push({
+        isDeleted: queries?.isDeleted === "true" ? true : false,
+      });
+    }
+
     const doctors = await prisma.doctor.findMany({
       where: {
         AND: andConditions,
