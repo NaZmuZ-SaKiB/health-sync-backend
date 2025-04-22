@@ -200,6 +200,23 @@ const mutations = {
       };
     }
 
+    const currentDoctor = await prisma.doctor.findUnique({
+      where: { userId: currentUser?.id },
+      select: { id: true, isVerified: true },
+    });
+
+    if (currentDoctor?.isVerified === false) {
+      if (updateData.doctor?.update) {
+        updateData.doctor.update.appliedDate = new Date();
+      } else {
+        updateData.doctor = {
+          update: {
+            appliedDate: new Date(),
+          },
+        };
+      }
+    }
+
     await prisma.user.update({
       where: { id: currentUser?.id },
       data: updateData,
