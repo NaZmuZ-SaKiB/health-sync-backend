@@ -9,6 +9,7 @@ export const queries = `#graphql
         specialty: String
         location: String
         isVerified: String
+        isDeleted: String
     ):DoctorsResponse!
 
     doctor(id: String!): Doctor!
