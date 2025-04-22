@@ -166,6 +166,14 @@ const mutations = {
       throw new AppError(status.NOT_FOUND, "Location not found.");
     }
 
+    const isLisenceNumberExists = await prisma.doctor.findFirst({
+      where: { licenseNumber: parsedData.doctor.licenseNumber },
+      select: { id: true },
+    });
+    if (!!isLisenceNumberExists) {
+      throw new AppError(status.CONFLICT, "License number already exists.");
+    }
+
     const hashedPassword = await hash(
       config.doctor_default_password as string,
       Number(config.bcrypt_salt_rounds)
