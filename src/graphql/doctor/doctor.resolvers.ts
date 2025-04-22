@@ -274,6 +274,40 @@ const mutations = {
 
     return { success: true };
   },
+
+  deleteDoctor: async (
+    _: any,
+    args: { doctorId: string },
+    { prisma, currentUser }: TContext
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const doctor = await prisma.doctor.findUnique({
+      where: { id: args.doctorId },
+      select: { id: true, userId: true },
+    });
+    if (!doctor) {
+      throw new AppError(status.NOT_FOUND, "Doctor not found.");
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.doctor.update({
+        where: { id: args.doctorId },
+        data: {
+          isDeleted: true,
+        },
+      });
+
+      await tx.user.update({
+        where: { id: doctor.userId },
+        data: {
+          isActive: false,
+        },
+      });
+    });
+
+    return { success: true };
+  },
 };
 
 export const resolvers = { queries, mutations, relationalQuery };
