@@ -275,31 +275,36 @@ const mutations = {
     return { success: true };
   },
 
-  deleteDoctor: async (
+  deleteDoctors: async (
     _: any,
-    args: { doctorId: string },
+    args: { ids: string[] },
     { prisma, currentUser }: TContext
   ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
-    const doctor = await prisma.doctor.findUnique({
-      where: { id: args.doctorId },
+    const parsedData = await Doctor.validations.remove.parseAsync(args);
+
+    const doctor = await prisma.doctor.findMany({
+      where: { id: { in: parsedData.ids } },
       select: { id: true, userId: true },
     });
-    if (!doctor) {
-      throw new AppError(status.NOT_FOUND, "Doctor not found.");
+    if (!doctor.length) {
+      throw new AppError(status.NOT_FOUND, "Doctors not found.");
     }
 
+    const doctorsToDelete = doctor.map((doc) => doc.id);
+    const usersToDelete = doctor.map((doc) => doc.userId);
+
     await prisma.$transaction(async (tx) => {
-      await tx.doctor.update({
-        where: { id: args.doctorId },
+      await tx.doctor.updateMany({
+        where: { id: { in: doctorsToDelete } },
         data: {
           isDeleted: true,
         },
       });
 
-      await tx.user.update({
-        where: { id: doctor.userId },
+      await tx.user.updateMany({
+        where: { id: { in: usersToDelete } },
         data: {
           isActive: false,
         },
