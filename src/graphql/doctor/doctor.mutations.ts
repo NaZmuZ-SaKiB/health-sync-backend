@@ -5,5 +5,5 @@ export const mutations = `#graphql
 
     verifyDoctor(doctorId: String!, status: DOCTOR_VERIFICATION_STATUS!): GenericSuccessResponse!
 
-    deleteDoctor(doctorId: String!): GenericSuccessResponse!
+    deleteDoctors(ids: [String!]!): GenericSuccessResponse!
 `;
