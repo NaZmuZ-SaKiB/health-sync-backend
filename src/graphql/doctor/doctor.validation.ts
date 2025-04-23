@@ -98,4 +98,10 @@ const verify = z.object({
   status: verificationStatus,
 });
 
-export const validations = { create, update, verify };
+const remove = z.object({
+  ids: z
+    .array(z.string().nonempty({ message: "ID is required." }))
+    .min(1, { message: "At least one ID is required." }),
+});
+
+export const validations = { create, update, verify, remove };
