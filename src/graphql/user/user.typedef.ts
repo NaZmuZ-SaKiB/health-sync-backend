@@ -9,7 +9,7 @@ export const typeDefs = `#graphql
         dateOfBirth: String
         gender: GENDER
         profilePicture: String
-        role: Role!
+        role: ROLE!
         isActive: Boolean!
         createdAt: String!
         updatedAt: String!
