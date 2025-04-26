@@ -1,3 +1,7 @@
 export const queries = `#graphql
-    images: [Image!]!
+    getAllImages(
+        page: String
+        limit: String
+        searchTerm: String
+    ): ImagesResponse!
 `;
