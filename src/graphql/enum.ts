@@ -1,5 +1,5 @@
 export const enumTypedef = `#graphql
-    enum Role {
+    enum ROLE {
         PATIENT
         DOCTOR
         ADMIN
