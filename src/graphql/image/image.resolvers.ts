@@ -1,14 +1,39 @@
 import { Prisma, ROLE } from "@prisma/client";
-import { TContext } from "../../types";
+import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
 import { TImageCreateInput } from "./image.type";
 import { Image } from ".";
+import calculatePagination from "../../utils/calculatePagination";
 
 const queries = {
-  images: async (_: any, __: any, { prisma, currentUser }: TContext) => {
+  getAllImages: async (
+    _: any,
+    queries: TFilters,
+    { prisma, currentUser }: TContext
+  ) => {
     await auth(prisma, currentUser);
 
+    const { page, limit, skip, sortBy, sortOrder } =
+      calculatePagination(queries);
+
     const conditions: Prisma.ImageWhereInput = {};
+
+    const searchableFields = [
+      "name",
+      "publicId",
+      "secureUrl",
+      "url",
+      "thumbnailUrl",
+    ];
+
+    if (queries?.searchTerm) {
+      conditions.OR = searchableFields.map((field) => ({
+        [field]: {
+          contains: queries?.searchTerm,
+          mode: "insensitive",
+        },
+      }));
+    }
 
     if (
       currentUser?.role === ROLE.PATIENT ||
@@ -21,28 +46,45 @@ const queries = {
       };
     }
 
-    const images = await prisma.image.findMany({ where: conditions });
+    const images = await prisma.image.findMany({
+      where: conditions,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      skip,
+      take: limit,
+    });
 
-    return images;
+    const total = await prisma.image.count({
+      where: conditions,
+    });
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return { images, meta };
   },
 };
 
 const mutations = {
-  createImage: async (
+  createImages: async (
     _: any,
     args: TImageCreateInput,
     { prisma, currentUser }: TContext
   ) => {
     await auth(prisma, currentUser);
 
-    const parsedData = await Image.validations.create.parseAsync(args);
+    const parsedData = await Image.validations.create.parseAsync(args.input);
 
-    await prisma.image.create({
-      data: {
-        ...parsedData,
+    await prisma.image.createMany({
+      data: parsedData.map((item) => ({
+        ...item,
         userId: currentUser?.id as string,
         userType: currentUser?.role as ROLE,
-      },
+      })),
     });
 
     return { success: true };
