@@ -1,5 +1,5 @@
 export const mutations = `#graphql
-    createImage(
-        name: String!
+    createImages(
+        input: [ImagesCreateInput!]!
     ):GenericSuccessResponse!
 `;
