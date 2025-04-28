@@ -11,6 +11,7 @@ export const typeDefs = `#graphql
         profilePicture: String
         role: ROLE!
         isActive: Boolean!
+        needPasswordChange: Boolean!
         createdAt: String!
         updatedAt: String!
         
