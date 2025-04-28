@@ -69,6 +69,16 @@ const relationalQuery = {
         where: { userId: parent.id },
       });
     },
+
+    profilePicture: async (parent: TUser, _: any, { prisma }: TContext) => {
+      if (parent.profilePictureId) {
+        return await prisma.image.findUnique({
+          where: { id: parent.profilePictureId },
+        });
+      } else {
+        return null;
+      }
+    },
   },
 };
 
