@@ -20,16 +20,16 @@ model User {
   address             String?
   dateOfBirth         String?   @map("date_of_birth")
   gender              GENDER?
-  profilePicture      String?   @map("profile_picture")
   role                ROLE      @default(PATIENT)
   isActive            Boolean   @default(true) @map("is_active")
+  profilePictureId    String?   @unique
   createdAt           DateTime  @default(now()) @map("created_at")
   updatedAt           DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  patient Patient?
-  doctor  Doctor?
-  images  Image[]
+  patient        Patient?
+  doctor         Doctor?
+  profilePicture Image?   @relation(fields: [profilePictureId], references: [id])
 
   @@map("users")
 }
@@ -225,7 +225,7 @@ model Image {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  user User @relation(fields: [userId], references: [id])
+  user User?
 
   @@map("images")
 }
