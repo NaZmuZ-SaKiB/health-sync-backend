@@ -185,6 +185,7 @@ const mutations = {
       data: {
         ...userData,
         password: hashedPassword,
+        needPasswordChange: true,
         role: ROLE.DOCTOR,
         doctor: {
           create: doctor,
