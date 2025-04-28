@@ -8,7 +8,6 @@ export const typeDefs = `#graphql
         address: String
         dateOfBirth: String
         gender: GENDER
-        profilePicture: String
         role: ROLE!
         isActive: Boolean!
         needPasswordChange: Boolean!
