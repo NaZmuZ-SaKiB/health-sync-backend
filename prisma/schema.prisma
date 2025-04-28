@@ -13,6 +13,7 @@ model User {
   password            String
   passwordResetCode   Int?      @map("password_reset_code")
   passwordResetExpiry DateTime? @map("password_reset_expiry")
+  needPasswordChange  Boolean   @default(false) @map("need_password_change")
   firstName           String?   @map("first_name")
   lastName            String?   @map("last_name")
   phoneNumber         String?   @default("") @map("phone_number")
