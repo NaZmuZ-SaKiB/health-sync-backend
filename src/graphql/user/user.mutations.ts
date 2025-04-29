@@ -9,4 +9,6 @@ export const mutations = `#graphql
         email: String!
         password: String!
     ): AuthResponse!
+
+    updateProfilePicture(id: String!): GenericSuccessResponse!
 `;
