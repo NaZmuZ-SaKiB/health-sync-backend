@@ -187,6 +187,27 @@ const mutations = {
 
     return { token, success: true };
   },
+
+  updateProfilePicture: async (
+    _: any,
+    args: { id: string },
+    { prisma, currentUser }: TContext
+  ) => {
+    await auth(prisma, currentUser);
+
+    if (!args.id) {
+      throw new AppError(status.BAD_REQUEST, "Image Id is required.");
+    }
+
+    await prisma.user.update({
+      where: { id: currentUser?.id as string },
+      data: {
+        profilePictureId: args.id,
+      },
+    });
+
+    return { success: true };
+  },
 };
 
 export const resolvers = { queries, mutations, relationalQuery };
