@@ -9,7 +9,6 @@ export type TDoctorCreateInput = {
     address: string;
     dateOfBirth: Date;
     gender: GENDER;
-    profilePicture?: string;
     doctor: {
       specialtyId: string;
       locationId: string;
@@ -30,7 +29,6 @@ export type TDoctorUpdateInput = {
     address?: string;
     dateOfBirth?: Date;
     gender?: GENDER;
-    profilePicture?: string;
     doctor: {
       licenseNumber?: string;
       bio?: string;
@@ -38,6 +36,7 @@ export type TDoctorUpdateInput = {
       experienceYears?: number;
       fee?: number;
       verificationStatus?: string;
+      locationId?: string;
     };
   };
 };
