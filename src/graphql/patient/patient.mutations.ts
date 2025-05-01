@@ -1,3 +1,3 @@
 export const mutations = `#graphql
-    updatePatient(input: UserPatientUpdateInput!): GenericSuccessResponse!
+    updatePatient(input: UserPatientUpdateInput!): User!
 `;
