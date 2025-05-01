@@ -235,7 +235,15 @@ const mutations = {
     const result = await prisma.user.update({
       where: { id: currentUser?.id },
       data: updateData,
-      include: { doctor: true },
+      include: {
+        doctor: {
+          include: {
+            specialty: true,
+            location: true,
+          },
+        },
+        profilePicture: true,
+      },
     });
 
     return result;
