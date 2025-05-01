@@ -26,12 +26,13 @@ const mutations = {
       };
     }
 
-    await prisma.user.update({
+    const result = await prisma.user.update({
       where: { id: currentUser?.id },
       data: updateData,
+      include: { patient: true },
     });
 
-    return { success: true };
+    return result;
   },
 };
 
