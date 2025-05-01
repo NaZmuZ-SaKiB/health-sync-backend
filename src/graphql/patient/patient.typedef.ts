@@ -28,7 +28,6 @@ export const typeDefs = `#graphql
         address: String
         dateOfBirth: String
         gender: GENDER
-        profilePicture: String
         patient: PatientUpdateInput
     }
 `;
