@@ -29,7 +29,6 @@ const create = z.object({
     .min(5, { message: "Address must be at least 5 characters long." }),
   dateOfBirth: z.string().date("Invalid Date Format."),
   gender,
-  profilePicture: z.string().optional(),
   doctor: z.object({
     specialtyId: z.string().min(1, { message: "Specialty ID is required." }),
     locationId: z.string().min(1, { message: "Location ID is required." }),
@@ -66,7 +65,6 @@ const update = z.object({
     .optional(),
   dateOfBirth: z.string().date("Invalid date format.").optional(),
   gender: gender.optional(),
-  profilePicture: z.string().optional(),
   doctor: z
     .object({
       locationId: z.string().nonempty().optional(),
