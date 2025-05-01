@@ -48,11 +48,11 @@ export const typeDefs = `#graphql
         address: String!
         dateOfBirth: String!
         gender: GENDER!
-        profilePicture: String
         doctor: DoctorCreateInput!
     }
 
     input DoctorUpdateInput {
+        locationId: String
         licenseNumber: String
         bio: String
         qualification: String
@@ -67,7 +67,6 @@ export const typeDefs = `#graphql
         address: String
         dateOfBirth: String
         gender: GENDER
-        profilePicture: String
         doctor: DoctorUpdateInput
     }
 `;
