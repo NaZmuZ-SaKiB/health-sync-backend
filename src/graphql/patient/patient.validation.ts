@@ -25,12 +25,8 @@ const update = z.object({
     .optional(),
   phoneNumber: z.string().optional(),
   address: z.string().optional(),
-  dateOfBirth: z.coerce.date({ message: "Invalid Date" }).optional(),
+  dateOfBirth: z.string().optional(),
   gender: gender.optional(),
-  profilePicture: z
-    .string()
-    .url("Invalid URL format for profile picture.")
-    .optional(),
   patient: z
     .object({
       emergencyContactName: z.string().optional(),
