@@ -232,12 +232,13 @@ const mutations = {
       }
     }
 
-    await prisma.user.update({
+    const result = await prisma.user.update({
       where: { id: currentUser?.id },
       data: updateData,
+      include: { doctor: true },
     });
 
-    return { success: true };
+    return result;
   },
 
   verifyDoctor: async (
