@@ -8,7 +8,6 @@ export type TPatientUpdateInput = {
     address?: string;
     dateOfBirth?: string;
     gender?: GENDER;
-    profilePicture?: string;
     patient?: {
       emergencyContactName?: string;
       emergencyContactPhone?: string;
