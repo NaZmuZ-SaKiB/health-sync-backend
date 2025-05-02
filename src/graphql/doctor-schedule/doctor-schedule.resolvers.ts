@@ -17,11 +17,45 @@ const queries = {
   ) => {
     const isSchedules = await prisma.doctorSchedule.findMany({
       where: {
-        doctorId: args.doctorId,
+        OR: [
+          {
+            doctorId: args.doctorId,
+          },
+          {
+            doctor: {
+              userId: args.doctorId,
+            },
+          },
+        ],
       },
     });
 
     if (isSchedules.length === 7) return isSchedules;
+
+    let doctorId = args.doctorId;
+
+    const isDoctorId = await prisma.doctor.findUnique({
+      where: { id: args.doctorId },
+    });
+
+    if (!isDoctorId) {
+      const isUserId = await prisma.user.findUnique({
+        where: { id: args.doctorId, role: ROLE.DOCTOR },
+        select: {
+          doctor: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      if (!isUserId) {
+        throw new AppError(status.BAD_REQUEST, "Invalid Data Provided.");
+      }
+
+      doctorId = isUserId.doctor?.id as string;
+    }
 
     let days = Object.values(DAY);
 
@@ -32,7 +66,7 @@ const queries = {
     }
 
     const data: Prisma.DoctorScheduleCreateManyInput[] = days.map((day) => ({
-      doctorId: args.doctorId,
+      doctorId: doctorId,
       day,
     }));
 
