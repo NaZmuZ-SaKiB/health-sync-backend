@@ -1,4 +1,4 @@
-import { ROLE } from "@prisma/client";
+import { DAY, Prisma, ROLE } from "@prisma/client";
 import { TContext } from "../../types";
 import auth from "../../utils/auth";
 import {
@@ -9,7 +9,40 @@ import { DoctorSchedule } from ".";
 import AppError from "../../errors/AppError";
 import status from "http-status";
 
-const queries = {};
+const queries = {
+  doctorSchedules: async (
+    _: any,
+    args: { doctorId: string },
+    { prisma }: TContext
+  ) => {
+    const isSchedules = await prisma.doctorSchedule.findMany({
+      where: {
+        doctorId: args.doctorId,
+      },
+    });
+
+    if (isSchedules.length === 7) return isSchedules;
+
+    let days = Object.values(DAY);
+
+    if (isSchedules.length > 0) {
+      isSchedules.forEach((schedule) => {
+        days = days.filter((day) => day !== schedule.day);
+      });
+    }
+
+    const data: Prisma.DoctorScheduleCreateManyInput[] = days.map((day) => ({
+      doctorId: args.doctorId,
+      day,
+    }));
+
+    const newSchedules = await prisma.doctorSchedule.createManyAndReturn({
+      data,
+    });
+
+    return [...isSchedules, ...newSchedules];
+  },
+};
 
 const mutations = {
   createDoctorSchedule: async (
