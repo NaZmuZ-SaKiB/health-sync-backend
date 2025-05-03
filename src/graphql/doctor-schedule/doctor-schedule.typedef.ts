@@ -12,4 +12,17 @@ export const typeDefs = `#graphql
         # Relations 
         doctor: Doctor!
     }
+
+    # Inputs
+    input DoctorScheduleUpdateData {
+        startTime: String
+        endTime: String
+        sessionLength: Int
+        isAvailable: Boolean
+    }
+
+    input DoctorScheduleUpdateInput {
+        ids: [String!]!
+        data: DoctorScheduleUpdateData!
+    }
 `;
