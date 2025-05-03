@@ -28,6 +28,9 @@ const queries = {
           },
         ],
       },
+      orderBy: {
+        day: "asc",
+      },
     });
 
     if (isSchedules.length === 7) return isSchedules;
@@ -70,11 +73,20 @@ const queries = {
       day,
     }));
 
-    const newSchedules = await prisma.doctorSchedule.createManyAndReturn({
+    await prisma.doctorSchedule.createMany({
       data,
     });
 
-    return [...isSchedules, ...newSchedules];
+    const schedules = await prisma.doctorSchedule.findMany({
+      where: {
+        doctorId,
+      },
+      orderBy: {
+        day: "asc",
+      },
+    });
+
+    return schedules;
   },
 };
 
@@ -124,21 +136,30 @@ const mutations = {
   ) => {
     await auth(prisma, currentUser, [ROLE.DOCTOR]);
 
-    const parsedData = await DoctorSchedule.validations.update.parseAsync(args);
+    const parsedData = await DoctorSchedule.validations.update.parseAsync(
+      args.input
+    );
 
-    const isScheduleExist = await prisma.doctorSchedule.findUnique({
-      where: { id: parsedData.scheduleId },
+    const schedules = await prisma.doctorSchedule.findMany({
+      where: {
+        id: {
+          in: parsedData.ids,
+        },
+      },
+      select: {
+        id: true,
+      },
     });
 
-    if (!isScheduleExist) {
+    if (!schedules.length) {
       throw new AppError(status.NOT_FOUND, "Schedule not found.");
     }
 
-    const { scheduleId, ...updateData } = parsedData;
+    const schedulesToUpdate: string[] = schedules.map((item) => item.id);
 
-    await prisma.doctorSchedule.update({
-      where: { id: parsedData.scheduleId },
-      data: updateData,
+    await prisma.doctorSchedule.updateMany({
+      where: { id: { in: schedulesToUpdate } },
+      data: parsedData.data,
     });
 
     return { success: true };
