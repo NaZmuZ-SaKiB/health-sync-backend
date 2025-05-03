@@ -6,10 +6,5 @@ export const mutations = `#graphql
         day: DAY!
     ): GenericSuccessResponse!
 
-    updateDoctorSchedule(
-        scheduleId: String!
-        startTime: String
-        endTime: String
-        isAvailable: Boolean
-    ): GenericSuccessResponse!
+    updateDoctorSchedule(input: DoctorScheduleUpdateInput!): GenericSuccessResponse!
 `;
