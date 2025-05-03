@@ -8,8 +8,13 @@ export type TDoctorScheduleCreateInput = {
 };
 
 export type TDoctorScheduleUpdateInput = {
-  scheduleId: string;
-  startTime?: string;
-  endTime?: string;
-  isAvailable?: boolean;
+  input: {
+    ids: string[];
+    data: {
+      sessionLength?: number;
+      startTime?: string;
+      endTime?: string;
+      isAvailable?: boolean;
+    };
+  };
 };
