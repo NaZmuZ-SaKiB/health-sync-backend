@@ -128,6 +128,14 @@ const relationalQuery = {
         where: { id: parent.locationId },
       });
     },
+
+    schedules: async (parent: TDoctor, _: any, { prisma }: TContext) => {
+      return await prisma.doctorSchedule.findMany({
+        where: {
+          doctorId: parent.id,
+        },
+      });
+    },
   },
 };
 
