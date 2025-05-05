@@ -1,13 +1,30 @@
-import { APPOINTMENT_STATUS } from "@prisma/client";
+import { APPOINTMENT_STATUS, BLOOD_GROUP, GENDER } from "@prisma/client";
 
 export type TAppointmentCreateInput = {
   input: {
-    scheduleId: string;
-    reason?: string;
-    timeSlot: {
-      slotDate: string;
-      startTime: string;
-      endTime: string;
+    user: {
+      email: string;
+      firstName: string;
+      lastName: string;
+      phoneNumber: string;
+      address?: string;
+      dateOfBirth: string;
+      gender: GENDER;
+
+      patient: {
+        bloodGroup: BLOOD_GROUP;
+        allergies?: string;
+      };
+    };
+
+    appointment: {
+      doctorId: string;
+      timeSlot: {
+        slotDate: string;
+        startTime: string;
+        endTime: string;
+      };
+      reason?: string;
     };
   };
 };
