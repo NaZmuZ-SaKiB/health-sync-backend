@@ -8,6 +8,7 @@ import {
 import { DoctorSchedule } from ".";
 import AppError from "../../errors/AppError";
 import status from "http-status";
+import moment from "moment";
 
 const queries = {
   doctorSchedules: async (
@@ -98,15 +99,13 @@ const queries = {
       throw new AppError(status.BAD_REQUEST, "Date is required");
     }
 
-    const date = new Date(args.date);
+    const date = moment(args.date, "ddd MMM DD YYYY");
 
-    if (isNaN(date as any)) {
+    if (!date.isValid()) {
       throw new AppError(status.BAD_REQUEST, "Invalid Date.");
     }
 
-    const weekName = date
-      .toLocaleDateString("en-us", { weekday: "long" })
-      .toUpperCase();
+    const weekName = date.format("dddd").toUpperCase();
 
     const schedule = await prisma.doctorSchedule.findFirst({
       where: {
