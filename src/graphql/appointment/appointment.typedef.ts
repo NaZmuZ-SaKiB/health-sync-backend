@@ -16,9 +16,39 @@ export const typeDefs = `#graphql
         review: Review
     }
 
-    input AppointmentCreateInput {
-        scheduleId: String!
-        reason: String
+    # Return Types
+
+    type AppointmentCreateReturn{
+        success: Boolean!
+        token: String
+    }
+
+    # Inputs
+
+    input AppointmentUserPatientInput {
+        bloodGroup: BLOOD_GROUP!
+        allergies: String
+    }
+
+    input AppointmentUserInput {
+        email: String!
+        firstName: String!
+        lastName: String!
+        phoneNumber: String!
+        address: String
+        dateOfBirth: String!
+        gender: GENDER!
+        patient: AppointmentUserPatientInput!
+    }
+
+    input AppointmentInput {
+        doctorId: String!
         timeSlot: TimeSlotCreateInput!
+        reason: String
+    }
+
+    input AppointmentCreateInput {
+        user: AppointmentUserInput!
+        appointment: AppointmentInput!
     }
 `;
