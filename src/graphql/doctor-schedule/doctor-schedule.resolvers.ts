@@ -88,6 +88,39 @@ const queries = {
 
     return schedules;
   },
+
+  getDoctorScheduleByDate: async (
+    _: any,
+    args: { doctorId: string; date: string },
+    { prisma }: TContext
+  ) => {
+    if (!args.date) {
+      throw new AppError(status.BAD_REQUEST, "Date is required");
+    }
+
+    const date = new Date(args.date);
+
+    if (isNaN(date as any)) {
+      throw new AppError(status.BAD_REQUEST, "Invalid Date.");
+    }
+
+    const weekName = date
+      .toLocaleDateString("en-us", { weekday: "long" })
+      .toUpperCase();
+
+    const schedule = await prisma.doctorSchedule.findFirst({
+      where: {
+        doctorId: args.doctorId,
+        day: weekName as DAY,
+      },
+    });
+
+    if (schedule) {
+      return schedule;
+    } else {
+      return null;
+    }
+  },
 };
 
 const mutations = {
