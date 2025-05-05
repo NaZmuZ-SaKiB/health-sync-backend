@@ -1,5 +1,7 @@
+import bcrypt from "bcrypt";
 import {
   APPOINTMENT_STATUS,
+  DAY,
   PAYMENT_STATUS,
   Prisma,
   ROLE,
@@ -15,6 +17,8 @@ import { Appointment } from ".";
 import AppError from "../../errors/AppError";
 import status from "http-status";
 import moment from "moment";
+import config from "../../config";
+import { jwtHelpers } from "../../utils/jwtHelper";
 
 const queries = {};
 
@@ -22,30 +26,93 @@ const mutations = {
   createAppointment: async (
     _: any,
     args: TAppointmentCreateInput,
-    { prisma, currentUser }: TContext
+    { prisma }: TContext
   ) => {
-    //* Step 1: Check if the user is authenticated and has the required role
-    //* Step 2: Validate the input data
-    //* Step 3: Check if the schedule is available
-    //* Step 4: Check if the appointment time is within the schedule time
-    //* Step 5: Check if the time slot is already booked
-    //* Step 6: Create appointment
-
-    await auth(prisma, currentUser, [ROLE.PATIENT]);
+    //* Step 1: Validate the input data
+    //* Step 2: Check if the user is in database by email and has the required role
+    //* Step 3: if user exists then update user
+    //* Step 4: if not then create new user where password is PhoneNumber
+    //* Step 5: Check if the schedule is available
+    //* Step 6: Check if the appointment time is within the schedule time
+    //* Step 7: Check if the time slot is already booked
+    //* Step 8: Create appointment
 
     const parsedData = await Appointment.validations.create.parseAsync(
       args.input
     );
 
-    // Get the patientId of the current user
-    const user = await prisma.user.findUnique({
-      where: { id: currentUser?.id },
+    // Checking if user exists
+    let user = await prisma.user.findUnique({
+      where: { email: parsedData.user.email },
       select: { id: true, patient: { select: { id: true } } },
     });
 
+    let token: string | null = null;
+
+    const { patient, email, ...userData } = parsedData.user;
+
+    // Create New User with PhoneNumber as Password
+    if (!user) {
+      const hashedPassword = await bcrypt.hash(
+        parsedData.user.phoneNumber,
+        Number(config.bcrypt_salt_rounds)
+      );
+
+      user = await prisma.user.create({
+        data: {
+          ...userData,
+          email,
+          password: hashedPassword,
+          needPasswordChange: true,
+          patient: {
+            create: {
+              ...patient,
+            },
+          },
+        },
+        select: { id: true, patient: { select: { id: true } } },
+      });
+
+      token = jwtHelpers.generateToken(
+        {
+          id: user.id,
+          email: parsedData.user.email,
+          role: ROLE.PATIENT,
+        },
+        config.jwt.jwt_access_token_secret as string,
+        config.jwt.jwt_access_token_expires_in as string
+      );
+    } else {
+      // Update User if Already exists
+      await prisma.user.update({
+        where: { email: parsedData.user.email },
+        data: {
+          ...userData,
+          patient: {
+            update: {
+              ...patient,
+            },
+          },
+        },
+      });
+    }
+
+    const date = moment(parsedData.appointment.timeSlot.slotDate, "DD-MM-YYYY");
+
+    if (!date.isValid()) {
+      throw new AppError(status.BAD_REQUEST, "Invalid Date.");
+    }
+
+    const weekName = date.format("dddd").toUpperCase();
+
     // Check if the schedule is available
     const schedule = await prisma.doctorSchedule.findUnique({
-      where: { id: parsedData.scheduleId },
+      where: {
+        doctorId_day: {
+          doctorId: parsedData.appointment.doctorId,
+          day: weekName as DAY,
+        },
+      },
       select: {
         id: true,
         doctorId: true,
@@ -66,18 +133,18 @@ const mutations = {
     }
 
     if (!schedule.isAvailable) {
-      throw new AppError(status.BAD_REQUEST, "Schedule is not available.");
+      throw new AppError(status.BAD_REQUEST, "Doctor is not available.");
     }
 
     // Check if the appointment time is within the schedule time
     const timeFormat = "HH:mm";
 
     const appointmentStartTime = moment(
-      parsedData?.timeSlot?.startTime,
+      parsedData?.appointment?.timeSlot?.startTime,
       timeFormat
     );
     const appointmentEndTime = moment(
-      parsedData?.timeSlot?.endTime,
+      parsedData?.appointment?.timeSlot?.endTime,
       timeFormat
     );
 
@@ -100,8 +167,8 @@ const mutations = {
     const isTimeSlotExist = await prisma.timeSlot.findFirst({
       where: {
         doctorId: schedule.doctorId,
-        slotDate: parsedData.timeSlot.slotDate,
-        startTime: parsedData.timeSlot.startTime,
+        slotDate: parsedData.appointment.timeSlot.slotDate,
+        startTime: parsedData.appointment.timeSlot.startTime,
       },
       select: {
         id: true,
@@ -113,7 +180,7 @@ const mutations = {
       throw new AppError(status.BAD_REQUEST, "Time slot is already booked.");
     }
 
-    const { timeSlot, scheduleId, ...appointmentData } = parsedData;
+    const { doctorId, timeSlot, ...appointmentData } = parsedData.appointment;
 
     // Create appointment
     await prisma.$transaction(async (tx) => {
@@ -123,7 +190,7 @@ const mutations = {
       if (!isTimeSlotExist) {
         newTimeSlot = await tx.timeSlot.create({
           data: {
-            ...parsedData.timeSlot,
+            ...parsedData.appointment.timeSlot,
             doctorId: schedule.doctorId,
             day: schedule.day,
             isBooked: true,
@@ -160,6 +227,9 @@ const mutations = {
       });
     });
 
+    if (token) {
+      return { success: true, token };
+    }
     return { success: true };
   },
 
