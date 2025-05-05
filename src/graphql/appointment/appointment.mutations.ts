@@ -1,5 +1,5 @@
 export const mutations = `#graphql
-    createAppointment(input: AppointmentCreateInput!): GenericSuccessResponse!
+    createAppointment(input: AppointmentCreateInput!): AppointmentCreateReturn!
 
     updateAppointment(
         appointmentId: String!
