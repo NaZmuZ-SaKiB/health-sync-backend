@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import {
+  Appointment as TAppointment,
   APPOINTMENT_STATUS,
   DAY,
   PAYMENT_STATUS,
@@ -151,6 +152,34 @@ const queries = {
     };
 
     return { appointments, meta };
+  },
+};
+
+const relationalQuery = {
+  Appointment: {
+    patient: async (parent: TAppointment, _: any, { prisma }: TContext) => {
+      return await prisma.patient.findUnique({
+        where: { id: parent.patientId },
+      });
+    },
+
+    doctor: async (parent: TAppointment, _: any, { prisma }: TContext) => {
+      return await prisma.doctor.findUnique({
+        where: { id: parent.doctorId },
+      });
+    },
+
+    timeSlot: async (parent: TAppointment, _: any, { prisma }: TContext) => {
+      return await prisma.timeSlot.findUnique({
+        where: { id: parent.slotId },
+      });
+    },
+
+    payment: async (parent: TAppointment, _: any, { prisma }: TContext) => {
+      return await prisma.payment.findUnique({
+        where: { appointmentId: parent.id },
+      });
+    },
   },
 };
 
@@ -457,4 +486,4 @@ const mutations = {
   },
 };
 
-export const resolvers = { queries, mutations };
+export const resolvers = { queries, relationalQuery, mutations };
