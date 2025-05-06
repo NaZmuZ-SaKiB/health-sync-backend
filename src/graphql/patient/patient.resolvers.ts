@@ -1,10 +1,20 @@
-import { Prisma, ROLE } from "@prisma/client";
+import { Patient as TPatient, Prisma, ROLE } from "@prisma/client";
 import { TContext } from "../../types";
 import auth from "../../utils/auth";
 import { TPatientUpdateInput } from "./patient.type";
 import { Patient } from ".";
 
 const queries = {};
+
+const relationalQuery = {
+  Patient: {
+    user: async (parent: TPatient, _: any, { prisma }: TContext) => {
+      return await prisma.user.findUnique({
+        where: { id: parent.userId },
+      });
+    },
+  },
+};
 
 const mutations = {
   updatePatient: async (
@@ -36,4 +46,4 @@ const mutations = {
   },
 };
 
-export const resolvers = { queries, mutations };
+export const resolvers = { queries, relationalQuery, mutations };
