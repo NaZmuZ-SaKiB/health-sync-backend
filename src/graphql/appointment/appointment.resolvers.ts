@@ -7,7 +7,7 @@ import {
   ROLE,
   TimeSlot,
 } from "@prisma/client";
-import { TContext } from "../../types";
+import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
 import {
   TAppointmentCreateInput,
@@ -19,8 +19,140 @@ import status from "http-status";
 import moment from "moment";
 import config from "../../config";
 import { jwtHelpers } from "../../utils/jwtHelper";
+import calculatePagination from "../../utils/calculatePagination";
 
-const queries = {};
+const queries = {
+  getAllAppointments: async (
+    _: any,
+    queries: TFilters,
+    { prisma, currentUser }: TContext
+  ) => {
+    await auth(prisma, currentUser);
+
+    const { page, limit, skip, sortBy, sortOrder } =
+      calculatePagination(queries);
+
+    const andConditions: Prisma.Enumerable<Prisma.AppointmentWhereInput> = [];
+
+    if (queries?.searchTerm) {
+      andConditions.push({
+        OR: [
+          {
+            doctor: {
+              user: {
+                firstName: {
+                  contains: queries?.searchTerm,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            doctor: {
+              user: {
+                lastName: {
+                  contains: queries?.searchTerm,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            doctor: {
+              user: {
+                phoneNumber: {
+                  contains: queries?.searchTerm,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            patient: {
+              user: {
+                firstName: {
+                  contains: queries?.searchTerm,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            patient: {
+              user: {
+                lastName: {
+                  contains: queries?.searchTerm,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            patient: {
+              user: {
+                phoneNumber: {
+                  contains: queries?.searchTerm,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            reason: {
+              contains: queries?.searchTerm,
+              mode: "insensitive",
+            },
+          },
+          {
+            notes: {
+              contains: queries?.searchTerm,
+              mode: "insensitive",
+            },
+          },
+        ],
+      });
+    }
+
+    if (queries?.status) {
+      andConditions.push({ status: queries?.status });
+    }
+
+    if (queries?.date) {
+      andConditions.push({ timeSlot: { slotDate: queries?.date } });
+    }
+
+    if (currentUser?.role === ROLE.DOCTOR) {
+      andConditions.push({ doctor: { user: { id: currentUser.id } } });
+    }
+
+    if (currentUser?.role === ROLE.PATIENT) {
+      andConditions.push({ patient: { user: { id: currentUser.id } } });
+    }
+
+    const appointments = await prisma.appointment.findMany({
+      where: {
+        AND: andConditions,
+      },
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      skip,
+      take: limit,
+    });
+
+    const total = await prisma.appointment.count({
+      where: { AND: andConditions },
+    });
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return { appointments, meta };
+  },
+};
 
 const mutations = {
   createAppointment: async (
