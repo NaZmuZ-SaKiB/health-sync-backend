@@ -19,7 +19,7 @@ export const resolvers = {
     ...Specialty.resolvers.queries,
     ...DoctorSchedule.resolvers.queries,
     ...TimeSlot.resolvers.queries,
-    ...Appointment.resolvers.mutations,
+    ...Appointment.resolvers.queries,
     ...Location.resolvers.queries,
     ...Image.resolvers.queries,
   },
@@ -40,4 +40,5 @@ export const resolvers = {
   },
   ...User.resolvers.relationalQuery,
   ...Doctor.resolvers.relationalQuery,
+  ...Appointment.resolvers.relationalQuery,
 };
