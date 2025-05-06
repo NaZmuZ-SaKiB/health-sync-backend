@@ -17,6 +17,10 @@ export const typeDefs = `#graphql
     }
 
     # Return Types
+    type AppointmentsResponse {
+        meta: Meta!
+        appointments: [Appointment!]!
+    }
 
     type AppointmentCreateReturn{
         success: Boolean!
@@ -24,7 +28,6 @@ export const typeDefs = `#graphql
     }
 
     # Inputs
-
     input AppointmentUserPatientInput {
         bloodGroup: BLOOD_GROUP!
         allergies: String
