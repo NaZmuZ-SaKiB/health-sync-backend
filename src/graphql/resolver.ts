@@ -19,6 +19,7 @@ export const resolvers = {
     ...Specialty.resolvers.queries,
     ...DoctorSchedule.resolvers.queries,
     ...TimeSlot.resolvers.queries,
+    ...Appointment.resolvers.mutations,
     ...Location.resolvers.queries,
     ...Image.resolvers.queries,
   },
