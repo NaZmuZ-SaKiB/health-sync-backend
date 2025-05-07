@@ -133,20 +133,21 @@ model TimeSlot {
 }
 
 model Appointment {
-  id        String             @id @default(uuid())
-  patientId String
-  doctorId  String
-  slotId    String             @unique
-  status    APPOINTMENT_STATUS @default(SCHEDULED)
-  reason    String?
-  notes     String?
-  createdAt DateTime           @default(now()) @map("created_at")
-  updatedAt DateTime           @updatedAt @map("updated_at")
+  id             String             @id @default(uuid())
+  patientId      String
+  doctorId       String
+  slotId         String?            @unique
+  canceledSlotId String?
+  status         APPOINTMENT_STATUS @default(SCHEDULED)
+  reason         String?
+  notes          String?
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
 
   // Relations
   patient  Patient        @relation(fields: [patientId], references: [id])
   doctor   Doctor         @relation(fields: [doctorId], references: [id])
-  timeSlot TimeSlot       @relation(fields: [slotId], references: [id])
+  timeSlot TimeSlot?      @relation(fields: [slotId], references: [id])
   payment  Payment?
   report   MedicalReport?
   review   Review?
