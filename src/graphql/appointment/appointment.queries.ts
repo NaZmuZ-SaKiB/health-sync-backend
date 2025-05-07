@@ -8,4 +8,6 @@ export const queries = `#graphql
         status: APPOINTMENT_STATUS
         date: String
     ): AppointmentsResponse!
+
+    appointment(id: String!): Appointment!
 `;
