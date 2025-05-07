@@ -399,11 +399,7 @@ const mutations = {
     args: TAppointmentUpdateInput,
     { prisma, currentUser }: TContext
   ) => {
-    await auth(prisma, currentUser, [
-      ROLE.DOCTOR,
-      ROLE.ADMIN,
-      ROLE.SUPER_ADMIN,
-    ]);
+    await auth(prisma, currentUser);
 
     const parsedData = await Appointment.validations.update.parseAsync(args);
 
@@ -433,6 +429,16 @@ const mutations = {
 
     if (!appointment) {
       throw new AppError(status.NOT_FOUND, "Appointment not found.");
+    }
+
+    if (currentUser?.role === ROLE.PATIENT) {
+      if (parsedData.notes) delete parsedData.notes;
+      if (parsedData.status !== APPOINTMENT_STATUS.CANCELLED) {
+        throw new AppError(
+          status.BAD_REQUEST,
+          "You are not authorized to update this status."
+        );
+      }
     }
 
     // Check if the current user is the doctor of the appointment
