@@ -153,6 +153,34 @@ const queries = {
 
     return { appointments, meta };
   },
+
+  appointment: async (
+    _: any,
+    args: { id: string },
+    { prisma, currentUser }: TContext
+  ) => {
+    await auth(prisma, currentUser, [ROLE.DOCTOR]);
+
+    if (!args.id) {
+      throw new AppError(status.BAD_REQUEST, "Appointment ID is required.");
+    }
+
+    const appointment = await prisma.appointment.findUnique({
+      where: { id: args.id },
+      include: {
+        doctor: true,
+      },
+    });
+
+    if (appointment?.doctor.userId !== currentUser?.id) {
+      throw new AppError(
+        status.BAD_REQUEST,
+        "You are not authorized to view this appointment."
+      );
+    }
+
+    return appointment;
+  },
 };
 
 const relationalQuery = {
