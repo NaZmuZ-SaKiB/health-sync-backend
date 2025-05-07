@@ -424,6 +424,11 @@ const mutations = {
             userId: true,
           },
         },
+        patient: {
+          select: {
+            userId: true,
+          },
+        },
       },
     });
 
@@ -432,6 +437,13 @@ const mutations = {
     }
 
     if (currentUser?.role === ROLE.PATIENT) {
+      if (appointment?.patient.userId !== currentUser.id) {
+        throw new AppError(
+          status.BAD_REQUEST,
+          "You are not authorized to update this appointment."
+        );
+      }
+
       if (parsedData.notes) delete parsedData.notes;
       if (parsedData.status !== APPOINTMENT_STATUS.CANCELLED) {
         throw new AppError(
