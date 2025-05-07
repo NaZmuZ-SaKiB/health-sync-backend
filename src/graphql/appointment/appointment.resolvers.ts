@@ -484,7 +484,7 @@ const mutations = {
 
         updateData.canceledSlotId = appointment?.slotId;
         updateData.timeSlot = {
-          disconnect: { id: appointment?.slotId as string },
+          disconnect: true,
         };
       }
 
