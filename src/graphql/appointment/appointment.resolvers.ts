@@ -171,7 +171,7 @@ const relationalQuery = {
 
     timeSlot: async (parent: TAppointment, _: any, { prisma }: TContext) => {
       return await prisma.timeSlot.findUnique({
-        where: { id: parent.slotId },
+        where: { id: (parent.slotId || parent.canceledSlotId) as string },
       });
     },
 
@@ -458,7 +458,7 @@ const mutations = {
       parsedData.status === APPOINTMENT_STATUS.NO_SHOW
     ) {
       const appointmentDateTime = moment(
-        `${appointment.timeSlot.slotDate} ${appointment.timeSlot.startTime}`,
+        `${appointment?.timeSlot?.slotDate} ${appointment?.timeSlot?.startTime}`,
         "DD-MM-YYYY HH:mm"
       );
       const currentDateTime = moment();
@@ -471,15 +471,21 @@ const mutations = {
       }
     }
 
-    const { appointmentId, ...updateData } = parsedData;
+    const { appointmentId, ...restData } = parsedData;
+    const updateData: Prisma.AppointmentUpdateInput = restData;
 
     await prisma.$transaction(async (tx) => {
       // Make time slot available if the appointment is cancelled
       if (parsedData.status === APPOINTMENT_STATUS.CANCELLED) {
         await tx.timeSlot.update({
-          where: { id: appointment.slotId },
+          where: { id: appointment?.slotId as string },
           data: { isBooked: false },
         });
+
+        updateData.canceledSlotId = appointment?.slotId;
+        updateData.timeSlot = {
+          disconnect: { id: appointment?.slotId as string },
+        };
       }
 
       await tx.appointment.update({
