@@ -464,6 +464,13 @@ const mutations = {
       throw new AppError(status.NOT_FOUND, "Appointment not found.");
     }
 
+    if (
+      parsedData.status &&
+      appointment.status !== APPOINTMENT_STATUS.SCHEDULED
+    ) {
+      throw new AppError(status.FORBIDDEN, "Status can't be updated now.");
+    }
+
     if (currentUser?.role === ROLE.PATIENT) {
       if (appointment?.patient.userId !== currentUser.id) {
         throw new AppError(
