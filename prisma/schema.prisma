@@ -176,7 +176,7 @@ model MedicalReport {
   patientId     String
   appointmentId String?     @unique
   title         String
-  reportType    REPORT_TYPE @map("report_type")
+  reportType    REPORT_TYPE @default(PRESCRIPTION) @map("report_type")
   reportDate    DateTime    @default(now()) @map("report_date")
   fileUrl       String?     @map("file_url")
   notes         String?
