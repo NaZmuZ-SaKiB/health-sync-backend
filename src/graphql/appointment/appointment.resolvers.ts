@@ -172,7 +172,7 @@ const queries = {
       },
     });
 
-    if (appointment?.doctor.userId !== currentUser?.id) {
+    if (appointment?.doctor?.userId !== currentUser?.id) {
       throw new AppError(
         status.BAD_REQUEST,
         "You are not authorized to view this appointment."
@@ -193,7 +193,7 @@ const relationalQuery = {
 
     doctor: async (parent: TAppointment, _: any, { prisma }: TContext) => {
       return await prisma.doctor.findUnique({
-        where: { id: parent.doctorId },
+        where: { id: parent?.doctorId || "" },
       });
     },
 
@@ -503,7 +503,7 @@ const mutations = {
     // Check if the current user is the doctor of the appointment
     if (
       currentUser?.role === ROLE.DOCTOR &&
-      currentUser?.id !== appointment.doctor.userId
+      currentUser?.id !== appointment?.doctor?.userId
     ) {
       throw new AppError(
         status.FORBIDDEN,
