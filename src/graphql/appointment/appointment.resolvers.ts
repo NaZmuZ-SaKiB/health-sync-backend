@@ -214,6 +214,12 @@ const relationalQuery = {
         where: { appointmentId: parent.id },
       });
     },
+
+    review: async (parent: TAppointment, _: any, { prisma }: TContext) => {
+      return await prisma.review.findUnique({
+        where: { appointmentId: parent.id },
+      });
+    },
   },
 };
 
