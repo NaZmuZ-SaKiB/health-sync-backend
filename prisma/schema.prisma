@@ -113,9 +113,24 @@ model DoctorSchedule {
   @@map("doctor_schedules")
 }
 
+model Service {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  icon        String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  timeSlots    TimeSlot[]
+  appointments Appointment[]
+  reviews      Review[]
+}
+
 model TimeSlot {
   id        String   @id @default(uuid())
-  doctorId  String
+  doctorId  String?
+  serviceId String?
   day       DAY
   slotDate  String   @map("slot_date")
   startTime String   @map("start_time")
@@ -125,17 +140,20 @@ model TimeSlot {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  doctor      Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctor      Doctor?      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   appointment Appointment?
+  service     Service?     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@unique([doctorId, slotDate, startTime])
+  @@unique([serviceId, slotDate, startTime])
   @@map("time_slots")
 }
 
 model Appointment {
   id             String             @id @default(uuid())
   patientId      String
-  doctorId       String
+  doctorId       String?
+  serviceId      String?
   slotId         String?            @unique
   canceledSlotId String?
   status         APPOINTMENT_STATUS @default(SCHEDULED)
@@ -146,7 +164,8 @@ model Appointment {
 
   // Relations
   patient  Patient        @relation(fields: [patientId], references: [id])
-  doctor   Doctor         @relation(fields: [doctorId], references: [id])
+  doctor   Doctor?        @relation(fields: [doctorId], references: [id])
+  service  Service?       @relation(fields: [serviceId], references: [id])
   timeSlot TimeSlot?      @relation(fields: [slotId], references: [id])
   payment  Payment?
   report   MedicalReport?
@@ -246,14 +265,16 @@ model Notification {
 model Review {
   id            String   @id @default(uuid())
   patientId     String
-  doctorId      String
+  doctorId      String?
+  serviceId     String?
   appointmentId String   @unique
   rating        Int
   comment       String?
   createdAt     DateTime @default(now()) @map("created_at")
 
   // Relations
-  doctor      Doctor      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctor      Doctor?     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  service     Service?    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
 
   @@map("reviews")
