@@ -208,6 +208,12 @@ const relationalQuery = {
         where: { appointmentId: parent.id },
       });
     },
+
+    report: async (parent: TAppointment, _: any, { prisma }: TContext) => {
+      return await prisma.medicalReport.findUnique({
+        where: { appointmentId: parent.id },
+      });
+    },
   },
 };
 
