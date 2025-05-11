@@ -59,10 +59,12 @@ const mutations = {
       }
 
       if (isAppointmentExist?.report?.id) {
-        throw new AppError(
-          status.BAD_REQUEST,
-          "Report already exist for this appointment"
-        );
+        await prisma.medicalReport.update({
+          where: { id: isAppointmentExist.report.id },
+          data: parsedData,
+        });
+
+        return { success: true };
       }
     }
 
