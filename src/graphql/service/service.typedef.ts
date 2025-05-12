@@ -12,4 +12,10 @@ export const typeDefs = `#graphql
         appointments: [Appointment!]!
         reviews: [Review!]!
     }
+
+    # Return Types
+    type ServicesResponse {
+        services: [Service!]!
+        meta: Meta!
+    }
 `;
