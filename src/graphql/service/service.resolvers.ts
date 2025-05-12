@@ -1,7 +1,7 @@
 import { Prisma, ROLE } from "@prisma/client";
 import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
-import { TServiceCreateInput } from "./service.type";
+import { TServiceCreateInput, TServiceUpdateInput } from "./service.type";
 import { Service } from ".";
 import AppError from "../../errors/AppError";
 import status from "http-status";
@@ -62,7 +62,7 @@ const mutations = {
   createService: async (
     _: any,
     args: TServiceCreateInput,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
@@ -80,6 +80,34 @@ const mutations = {
     await prisma.service.create({ data: parsedData });
 
     return { success: true };
+  },
+
+  updateService: async (
+    _: any,
+    args: TServiceUpdateInput,
+    { prisma, currentUser }: TContext,
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const parsedData = await Service.validations.update.parseAsync(args);
+
+    const { serviceId, ...updateData } = parsedData;
+
+    const isService = await prisma.service.findUnique({
+      where: { id: parsedData.serviceId },
+      select: { id: true },
+    });
+
+    if (!isService) {
+      throw new AppError(status.NOT_FOUND, "Service not found.");
+    }
+
+    const service = await prisma.service.update({
+      where: { id: parsedData.serviceId },
+      data: updateData,
+    });
+
+    return service;
   },
 };
 
