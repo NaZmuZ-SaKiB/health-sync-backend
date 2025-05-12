@@ -4,4 +4,11 @@ export const mutations = `#graphql
     description: String
     icon: String
    ): GenericSuccessResponse!
+
+   updateService(
+      serviceId: String!
+      name: String
+      description: String
+      icon: String
+   ): Service!
 `;
