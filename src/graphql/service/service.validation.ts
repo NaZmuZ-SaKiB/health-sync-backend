@@ -13,4 +13,15 @@ const create = z.object({
     .optional(),
 });
 
-export const validations = { create };
+const update = z.object({
+  serviceId: z.string({ required_error: "Service Id Required." }),
+  name: z.string().max(255).optional(),
+  description: z.string().max(255).optional(),
+  icon: z
+    .string()
+    .nonempty()
+    .url({ message: "Invalid URL for icon." })
+    .optional(),
+});
+
+export const validations = { create, update };
