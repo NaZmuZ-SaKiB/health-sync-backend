@@ -12,6 +12,7 @@ import { User } from "./user";
 import { enumTypedef } from "./enum";
 import { Location } from "./location";
 import { Image } from "./image";
+import { Service } from "./service";
 
 export const typeDefs = `#graphql
   ${User.typeDefs}
@@ -19,6 +20,7 @@ export const typeDefs = `#graphql
   ${Doctor.typeDefs}
   ${Specialty.typeDefs}
   ${DoctorSchedule.typeDefs}
+  ${Service.typeDefs}
   ${TimeSlot.typeDefs}
   ${Appointment.typeDefs}
   ${Payment.typeDefs}
@@ -56,6 +58,7 @@ export const typeDefs = `#graphql
     ${Doctor.mutations}
     ${Specialty.mutations}
     ${DoctorSchedule.mutations}
+    ${Service.mutations}
     ${TimeSlot.mutations}
     ${Appointment.mutations}
     ${Payment.mutations}
