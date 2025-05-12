@@ -8,6 +8,7 @@ import { Notification } from "./notification";
 import { Patient } from "./patient";
 import { Payment } from "./payment";
 import { Review } from "./review";
+import { Service } from "./service";
 import { Specialty } from "./specialty";
 import { TimeSlot } from "./time-slot";
 import { User } from "./user";
@@ -29,6 +30,7 @@ export const resolvers = {
     ...Doctor.resolvers.mutations,
     ...Specialty.resolvers.mutations,
     ...DoctorSchedule.resolvers.mutations,
+    ...Service.resolvers.mutations,
     ...TimeSlot.resolvers.mutations,
     ...Appointment.resolvers.mutations,
     ...Payment.resolvers.mutations,
