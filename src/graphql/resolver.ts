@@ -9,6 +9,7 @@ import { Patient } from "./patient";
 import { Payment } from "./payment";
 import { Review } from "./review";
 import { Service } from "./service";
+import { ServiceSettings } from "./service-settings";
 import { Specialty } from "./specialty";
 import { TimeSlot } from "./time-slot";
 import { User } from "./user";
@@ -32,6 +33,7 @@ export const resolvers = {
     ...Specialty.resolvers.mutations,
     ...DoctorSchedule.resolvers.mutations,
     ...Service.resolvers.mutations,
+    ...ServiceSettings.resolvers.mutations,
     ...TimeSlot.resolvers.mutations,
     ...Appointment.resolvers.mutations,
     ...Payment.resolvers.mutations,
