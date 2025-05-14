@@ -1,3 +1,5 @@
-export type TServiceSettingsCreateInput = {};
-
-export type TServiceSettingsUpdateInput = {};
+export type TServiceSettingsUpdateInput = {
+  serviceId: string;
+  startTime: string;
+  endTime: string;
+};
