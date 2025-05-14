@@ -7,7 +7,7 @@ export const typeDefs = `#graphql
         updatedAt: String!
 
         # Relations
-        service Service!
+        service: Service!
     }
 
     # Return Types
