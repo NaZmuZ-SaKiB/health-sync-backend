@@ -114,17 +114,34 @@ model DoctorSchedule {
 }
 
 model Service {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  description String?
-  icon        String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id                String   @id @default(uuid())
+  serviceSettingsId String?  @unique
+  name              String   @unique
+  description       String?
+  icon              String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
   // Relations
-  timeSlots    TimeSlot[]
-  appointments Appointment[]
-  reviews      Review[]
+  serviceSettings ServiceSettings? @relation(fields: [serviceSettingsId], references: [id])
+  timeSlots       TimeSlot[]
+  appointments    Appointment[]
+  reviews         Review[]
+
+  @@map("services")
+}
+
+model ServiceSettings {
+  id        String   @id @default(uuid())
+  startTime String   @map("start_time")
+  endTime   String   @map("end_time")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  service Service?
+
+  @@map("service_settings")
 }
 
 model TimeSlot {
