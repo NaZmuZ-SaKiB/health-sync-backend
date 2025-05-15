@@ -8,7 +8,7 @@ export const typeDefs = `#graphql
         updatedAt: String!
 
         # Relations
-        serviceSettings: ServiceSettings!
+        serviceSettings: ServiceSettings
         timeSlots: [TimeSlot!]!
         appointments: [Appointment!]!
         reviews: [Review!]!
