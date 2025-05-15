@@ -46,5 +46,6 @@ export const resolvers = {
   ...User.resolvers.relationalQuery,
   ...Patient.resolvers.relationalQuery,
   ...Doctor.resolvers.relationalQuery,
+  ...Service.resolvers.relationalQuery,
   ...Appointment.resolvers.relationalQuery,
 };
