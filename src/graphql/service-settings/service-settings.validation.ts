@@ -18,6 +18,9 @@ const update = z
       .refine((time) => moment(time, timeFormat, true).isValid(), {
         message: "End time must be in HH:mm format.",
       }),
+    duration: z
+      .number({ required_error: "Duration is required" })
+      .min(15, "Duration must be at least 15 minutes"),
   })
   .refine(
     (data) => {
