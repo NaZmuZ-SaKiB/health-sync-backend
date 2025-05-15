@@ -1,4 +1,4 @@
-import { Prisma, ROLE } from "@prisma/client";
+import { Prisma, ROLE, Service as TService } from "@prisma/client";
 import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
 import { TServiceCreateInput, TServiceUpdateInput } from "./service.type";
@@ -58,6 +58,18 @@ const queries = {
   },
 };
 
+const relationalQuery = {
+  Service: {
+    serviceSettings: async (parent: TService, _: any, { prisma }: TContext) => {
+      if (!parent.serviceSettingsId) return null;
+
+      return await prisma.serviceSettings.findUnique({
+        where: { id: parent.serviceSettingsId },
+      });
+    },
+  },
+};
+
 const mutations = {
   createService: async (
     _: any,
@@ -111,4 +123,4 @@ const mutations = {
   },
 };
 
-export const resolvers = { queries, mutations };
+export const resolvers = { queries, relationalQuery, mutations };
