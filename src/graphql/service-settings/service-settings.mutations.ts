@@ -3,5 +3,6 @@ export const mutations = `#graphql
     serviceId: String!
     startTime: String
     endTime: String
+    duration: Int
   ): GenericSuccessResponse!
 `;
