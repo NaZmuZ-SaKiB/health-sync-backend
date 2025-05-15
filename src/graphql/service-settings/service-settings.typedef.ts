@@ -3,6 +3,7 @@ export const typeDefs = `#graphql
         id: ID!
         startTime: String!
         endTime: String!
+        duration: Int!
         createdAt: String!
         updatedAt: String!
 
