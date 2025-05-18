@@ -136,6 +136,7 @@ model ServiceSettings {
   startTime String   @map("start_time")
   endTime   String   @map("end_time")
   duration  Int      @default(15)
+  fee Int @default(0)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
