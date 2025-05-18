@@ -7,6 +7,9 @@ import {
   Prisma,
   ROLE,
   TimeSlot,
+  DoctorSchedule as TDoctorSchedule,
+  ServiceSettings as TServiceSettings,
+  Doctor as TDoctor,
 } from "@prisma/client";
 import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
@@ -17,7 +20,7 @@ import {
 import { Appointment } from ".";
 import AppError from "../../errors/AppError";
 import status from "http-status";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import config from "../../config";
 import { jwtHelpers } from "../../utils/jwtHelper";
 import calculatePagination from "../../utils/calculatePagination";
@@ -26,7 +29,7 @@ const queries = {
   getAllAppointments: async (
     _: any,
     queries: TFilters,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser);
 
@@ -157,7 +160,7 @@ const queries = {
   appointment: async (
     _: any,
     args: { id: string },
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.DOCTOR]);
 
@@ -175,7 +178,7 @@ const queries = {
     if (appointment?.doctor?.userId !== currentUser?.id) {
       throw new AppError(
         status.BAD_REQUEST,
-        "You are not authorized to view this appointment."
+        "You are not authorized to view this appointment.",
       );
     }
 
@@ -227,7 +230,7 @@ const mutations = {
   createAppointment: async (
     _: any,
     args: TAppointmentCreateInput,
-    { prisma }: TContext
+    { prisma }: TContext,
   ) => {
     //* Step 1: Validate the input data
     //* Step 2: Check if the user is in database by email and has the required role
@@ -239,7 +242,7 @@ const mutations = {
     //* Step 8: Create appointment
 
     const parsedData = await Appointment.validations.create.parseAsync(
-      args.input
+      args.input,
     );
 
     // Checking if user exists
@@ -256,7 +259,7 @@ const mutations = {
     if (!user) {
       const hashedPassword = await bcrypt.hash(
         parsedData.user.phoneNumber,
-        Number(config.bcrypt_salt_rounds)
+        Number(config.bcrypt_salt_rounds),
       );
 
       user = await prisma.user.create({
@@ -281,7 +284,7 @@ const mutations = {
           role: ROLE.PATIENT,
         },
         config.jwt.jwt_access_token_secret as string,
-        config.jwt.jwt_access_token_expires_in as string
+        config.jwt.jwt_access_token_expires_in as string,
       );
     } else {
       // Update User if Already exists
@@ -298,6 +301,7 @@ const mutations = {
       });
     }
 
+    // Checking if Date is valid
     const date = moment(parsedData.appointment.timeSlot.slotDate, "DD-MM-YYYY");
 
     if (!date.isValid()) {
@@ -306,35 +310,59 @@ const mutations = {
 
     const weekName = date.format("dddd").toUpperCase();
 
-    // Check if the schedule is available
-    const schedule = await prisma.doctorSchedule.findUnique({
-      where: {
-        doctorId_day: {
-          doctorId: parsedData.appointment.doctorId,
-          day: weekName as DAY,
-        },
-      },
-      select: {
-        id: true,
-        doctorId: true,
-        day: true,
-        startTime: true,
-        endTime: true,
-        isAvailable: true,
-        doctor: {
-          select: {
-            fee: true,
+    // Check if the schedule is available when doctor ID is Provided
+    let schedule: Partial<
+      TDoctorSchedule & { doctor: Partial<TDoctor> }
+    > | null = null;
+
+    if (parsedData.appointment?.doctorId) {
+      schedule = await prisma.doctorSchedule.findUnique({
+        where: {
+          doctorId_day: {
+            doctorId: parsedData.appointment.doctorId,
+            day: weekName as DAY,
           },
         },
-      },
-    });
+        select: {
+          id: true,
+          doctorId: true,
+          day: true,
+          startTime: true,
+          endTime: true,
+          isAvailable: true,
+          doctor: {
+            select: {
+              fee: true,
+            },
+          },
+        },
+      });
 
-    if (!schedule) {
-      throw new AppError(status.NOT_FOUND, "Schedule not found.");
+      if (!schedule) {
+        throw new AppError(status.NOT_FOUND, "Schedule not found.");
+      }
+
+      if (!schedule.isAvailable) {
+        throw new AppError(status.BAD_REQUEST, "Doctor is not available.");
+      }
     }
 
-    if (!schedule.isAvailable) {
-      throw new AppError(status.BAD_REQUEST, "Doctor is not available.");
+    // Check if the service  is available when service ID is Provided
+    let serviceSettings: Partial<TServiceSettings> | null = null;
+
+    if (parsedData?.appointment?.serviceId) {
+      serviceSettings = await prisma.serviceSettings.findFirst({
+        where: { service: { id: parsedData.appointment?.serviceId } },
+        select: {
+          startTime: true,
+          endTime: true,
+          fee: true,
+        },
+      });
+
+      if (!serviceSettings) {
+        throw new AppError(status.NOT_FOUND, "Service Not available.");
+      }
     }
 
     // Check if the appointment time is within the schedule time
@@ -342,34 +370,51 @@ const mutations = {
 
     const appointmentStartTime = moment(
       parsedData?.appointment?.timeSlot?.startTime,
-      timeFormat
+      timeFormat,
     );
     const appointmentEndTime = moment(
       parsedData?.appointment?.timeSlot?.endTime,
-      timeFormat
+      timeFormat,
     );
 
-    const scheduleStartTime = moment(schedule.startTime, timeFormat);
-    const scheduleEndTime = moment(schedule.endTime, timeFormat);
+    let scheduleStartTime: Moment;
+    let scheduleEndTime: Moment;
+
+    if (schedule) {
+      scheduleStartTime = moment(schedule.startTime, timeFormat);
+      scheduleEndTime = moment(schedule.endTime, timeFormat);
+    }
+
+    if (serviceSettings) {
+      scheduleStartTime = moment(serviceSettings.startTime, timeFormat);
+      scheduleEndTime = moment(serviceSettings.endTime, timeFormat);
+    }
 
     if (
-      appointmentStartTime.isBefore(scheduleStartTime) ||
-      appointmentEndTime.isAfter(scheduleEndTime)
+      appointmentStartTime.isBefore(scheduleStartTime!) ||
+      appointmentEndTime.isAfter(scheduleEndTime!)
     ) {
       throw new AppError(
         status.BAD_REQUEST,
-        `Appointment time must be within ${scheduleStartTime.format(
-          "hh:mm A"
-        )} and ${scheduleEndTime.format("hh:mm A")}.`
+        `Appointment time must be within ${scheduleStartTime!.format(
+          "hh:mm A",
+        )} and ${scheduleEndTime!.format("hh:mm A")}.`,
       );
     }
 
     // Check if the time slot is already booked
     const isTimeSlotExist = await prisma.timeSlot.findFirst({
       where: {
-        doctorId: schedule.doctorId,
         slotDate: parsedData.appointment.timeSlot.slotDate,
         startTime: parsedData.appointment.timeSlot.startTime,
+        OR: [
+          {
+            doctorId: schedule?.doctorId,
+          },
+          {
+            serviceId: parsedData.appointment.serviceId,
+          },
+        ],
       },
       select: {
         id: true,
@@ -383,6 +428,15 @@ const mutations = {
 
     const { doctorId, timeSlot, ...appointmentData } = parsedData.appointment;
 
+    // For dynamicly add doctor or service in appointment create data
+    const appointmentType: { doctorId?: string; serviceId?: string } = {};
+
+    if (parsedData.appointment.doctorId)
+      appointmentType.doctorId = parsedData.appointment.doctorId;
+
+    if (parsedData.appointment.serviceId)
+      appointmentType.serviceId = parsedData.appointment.serviceId;
+
     // Create appointment
     await prisma.$transaction(async (tx) => {
       let newTimeSlot: Partial<TimeSlot> | null = null;
@@ -392,8 +446,8 @@ const mutations = {
         newTimeSlot = await tx.timeSlot.create({
           data: {
             ...parsedData.appointment.timeSlot,
-            doctorId: schedule.doctorId,
-            day: schedule.day,
+            ...appointmentType,
+            day: weekName as DAY,
             isBooked: true,
           },
           select: {
@@ -409,7 +463,7 @@ const mutations = {
 
       await tx.appointment.create({
         data: {
-          doctorId: schedule.doctorId,
+          ...appointmentType,
           patientId: user?.patient?.id as string,
           slotId: isTimeSlotExist
             ? isTimeSlotExist?.id
@@ -417,9 +471,9 @@ const mutations = {
           ...appointmentData,
           payment: {
             create: {
-              amount: schedule.doctor.fee as number,
+              amount: schedule?.doctor?.fee || (serviceSettings?.fee as number),
               status:
-                schedule.doctor.fee === 0
+                schedule?.doctor?.fee === 0 || serviceSettings?.fee === 0
                   ? PAYMENT_STATUS.COMPLETED
                   : PAYMENT_STATUS.PENDING,
             },
@@ -437,7 +491,7 @@ const mutations = {
   updateAppointment: async (
     _: any,
     args: TAppointmentUpdateInput,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser);
 
@@ -487,7 +541,7 @@ const mutations = {
       if (appointment?.patient.userId !== currentUser.id) {
         throw new AppError(
           status.BAD_REQUEST,
-          "You are not authorized to update this appointment."
+          "You are not authorized to update this appointment.",
         );
       }
 
@@ -495,7 +549,7 @@ const mutations = {
       if (parsedData.status !== APPOINTMENT_STATUS.CANCELLED) {
         throw new AppError(
           status.BAD_REQUEST,
-          "You are not authorized to update this status."
+          "You are not authorized to update this status.",
         );
       }
     }
@@ -507,7 +561,7 @@ const mutations = {
     ) {
       throw new AppError(
         status.FORBIDDEN,
-        "You are not authorized to update this appointment."
+        "You are not authorized to update this appointment.",
       );
     }
 
@@ -518,14 +572,14 @@ const mutations = {
     ) {
       const appointmentDateTime = moment(
         `${appointment?.timeSlot?.slotDate} ${appointment?.timeSlot?.startTime}`,
-        "DD-MM-YYYY HH:mm"
+        "DD-MM-YYYY HH:mm",
       );
       const currentDateTime = moment();
 
       if (currentDateTime.isBefore(appointmentDateTime)) {
         throw new AppError(
           status.BAD_REQUEST,
-          "You can't update appointment status before appointment time."
+          "You can't update appointment status before appointment time.",
         );
       }
     }
