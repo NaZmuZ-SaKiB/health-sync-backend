@@ -6,7 +6,17 @@ import { ServiceSettings } from ".";
 import AppError from "../../errors/AppError";
 import status from "http-status";
 
-const queries = {};
+const queries = {
+  serviceSettings: async (
+    _: any,
+    args: { serviceId: string },
+    { prisma }: TContext,
+  ) => {
+    return await prisma.serviceSettings.findFirst({
+      where: { service: { id: args.serviceId } },
+    });
+  },
+};
 
 const mutations = {
   updateServiceSettings: async (
