@@ -1,6 +1,7 @@
 export const queries = `#graphql
     getTimeSlotsByDate(
-        doctorId: String!
+        doctorId: String
+        serviceId: String
         date: String!
     ): [TimeSlot!]!
 `;
