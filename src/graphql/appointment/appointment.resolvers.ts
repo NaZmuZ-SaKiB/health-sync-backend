@@ -200,6 +200,12 @@ const relationalQuery = {
       });
     },
 
+    service: async (parent: TAppointment, _: any, { prisma }: TContext) => {
+      return await prisma.service.findUnique({
+        where: { id: parent?.serviceId || "" },
+      });
+    },
+
     timeSlot: async (parent: TAppointment, _: any, { prisma }: TContext) => {
       return await prisma.timeSlot.findUnique({
         where: { id: (parent.slotId || parent.canceledSlotId) as string },
