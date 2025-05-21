@@ -45,7 +45,8 @@ export const typeDefs = `#graphql
     }
 
     input AppointmentInput {
-        doctorId: String!
+        doctorId: String
+        serviceId: String
         timeSlot: TimeSlotCreateInput!
         reason: String
     }
