@@ -49,6 +49,7 @@ export const typeDefs = `#graphql
     ${Specialty.queries}
     ${DoctorSchedule.queries}
     ${Service.queries}
+    ${ServiceSettings.queries}
     ${TimeSlot.queries}
     ${Appointment.queries}
     ${Location.queries}
