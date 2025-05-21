@@ -6,8 +6,8 @@ import moment from "moment";
 const queries = {
   getTimeSlotsByDate: async (
     _: any,
-    args: { doctorId: string; date: string },
-    { prisma }: TContext
+    args: { doctorId?: string; serviceId?: string; date: string },
+    { prisma }: TContext,
   ) => {
     if (!args.date) {
       throw new AppError(status.BAD_REQUEST, "Date is required");
@@ -17,14 +17,21 @@ const queries = {
     if (!isValidDate) {
       throw new AppError(
         status.BAD_REQUEST,
-        "Date Format should be DD-MM-YYYY."
+        "Date Format should be DD-MM-YYYY.",
       );
     }
 
     const slots = await prisma.timeSlot.findMany({
       where: {
-        doctorId: args.doctorId,
         slotDate: args.date,
+        OR: [
+          {
+            doctorId: args.doctorId,
+          },
+          {
+            serviceId: args.serviceId,
+          },
+        ],
       },
     });
 
