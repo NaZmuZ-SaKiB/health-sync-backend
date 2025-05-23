@@ -10,11 +10,12 @@ export const typeDefs = `#graphql
         createdAt: String!
         updatedAt: String!
 
-        # Relations 
+        # Relations
         doctors: [Doctor!]!
+        appointments: [Appointment]
     }
 
-    # Return Types 
+    # Return Types
     type LocationsResponse {
         locations: [Location!]!
         meta: Meta!
