@@ -206,6 +206,12 @@ const relationalQuery = {
       });
     },
 
+    location: async (parent: TAppointment, _: any, { prisma }: TContext) => {
+      return await prisma.location.findUnique({
+        where: { id: parent?.locationId || "" },
+      });
+    },
+
     timeSlot: async (parent: TAppointment, _: any, { prisma }: TContext) => {
       return await prisma.timeSlot.findUnique({
         where: { id: (parent.slotId || parent.canceledSlotId) as string },
@@ -245,7 +251,8 @@ const mutations = {
     //* Step 5: Check if the schedule is available
     //* Step 6: Check if the appointment time is within the schedule time
     //* Step 7: Check if the time slot is already booked
-    //* Step 8: Create appointment
+    //* Step 8: Check if the location is valid
+    //* Step 9: Create appointment
 
     const parsedData = await Appointment.validations.create.parseAsync(
       args.input,
@@ -442,6 +449,15 @@ const mutations = {
 
     if (parsedData.appointment.serviceId)
       appointmentType.serviceId = parsedData.appointment.serviceId;
+
+    // Check if location is valid
+    const location = await prisma.location.findUnique({
+      where: { id: parsedData.appointment.locationId },
+    });
+
+    if (!location) {
+      throw new AppError(status.NOT_FOUND, "Location is not valid.");
+    }
 
     // Create appointment
     await prisma.$transaction(async (tx) => {
