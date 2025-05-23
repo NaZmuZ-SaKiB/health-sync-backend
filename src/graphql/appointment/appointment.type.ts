@@ -18,7 +18,9 @@ export type TAppointmentCreateInput = {
     };
 
     appointment: {
-      doctorId: string;
+      doctorId?: string;
+      serviceId?: string;
+      locationId: string;
       timeSlot: {
         slotDate: string;
         startTime: string;
