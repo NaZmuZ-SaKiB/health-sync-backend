@@ -173,6 +173,7 @@ model Appointment {
   patientId      String
   doctorId       String?
   serviceId      String?
+  locationId     String?
   slotId         String?            @unique
   canceledSlotId String?
   status         APPOINTMENT_STATUS @default(SCHEDULED)
@@ -185,6 +186,7 @@ model Appointment {
   patient  Patient        @relation(fields: [patientId], references: [id])
   doctor   Doctor?        @relation(fields: [doctorId], references: [id])
   service  Service?       @relation(fields: [serviceId], references: [id])
+  location Location?      @relation(fields: [locationId], references: [id])
   timeSlot TimeSlot?      @relation(fields: [slotId], references: [id])
   payment  Payment?
   report   MedicalReport?
@@ -243,6 +245,7 @@ model Location {
 
   // Relations
   doctors Doctor[]
+  appointments Appointment[]
 
   @@map("locations")
 }
