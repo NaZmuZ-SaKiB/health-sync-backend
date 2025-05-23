@@ -50,6 +50,7 @@ const create = z.object({
     .object({
       doctorId: z.string().optional(),
       serviceId: z.string().optional(),
+      locationId: z.string({ required_error: "Location is required." }),
       timeSlot: z
         .object({
           slotDate: z
