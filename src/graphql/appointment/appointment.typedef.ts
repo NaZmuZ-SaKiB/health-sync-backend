@@ -11,6 +11,7 @@ export const typeDefs = `#graphql
         patient: Patient!
         doctor: Doctor
         service: Service
+        location: Location
         timeSlot: TimeSlot!
         payment: Payment
         report: MedicalReport
@@ -48,6 +49,7 @@ export const typeDefs = `#graphql
     input AppointmentInput {
         doctorId: String
         serviceId: String
+        locationId: String!
         timeSlot: TimeSlotCreateInput!
         reason: String
     }
