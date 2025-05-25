@@ -38,6 +38,21 @@ const queries = {
 
     const andConditions: Prisma.Enumerable<Prisma.AppointmentWhereInput> = [];
 
+    // retrun service appointmetns if current user is admin
+    if (
+      currentUser?.role === ROLE.ADMIN ||
+      currentUser?.role === ROLE.SUPER_ADMIN
+    ) {
+      andConditions.push({
+        serviceId: {
+          not: null,
+        },
+      });
+      andConditions.push({
+        doctorId: null,
+      });
+    }
+
     if (queries?.searchTerm) {
       andConditions.push({
         OR: [
@@ -98,6 +113,14 @@ const queries = {
                   contains: queries?.searchTerm,
                   mode: "insensitive",
                 },
+              },
+            },
+          },
+          {
+            service: {
+              name: {
+                contains: queries?.searchTerm,
+                mode: "insensitive",
               },
             },
           },
@@ -426,6 +449,7 @@ const mutations = {
           },
           {
             serviceId: parsedData.appointment.serviceId,
+            locationId: parsedData.appointment.locationId,
           },
         ],
       },
@@ -453,6 +477,7 @@ const mutations = {
     // Check if location is valid
     const location = await prisma.location.findUnique({
       where: { id: parsedData.appointment.locationId },
+      select: { id: true },
     });
 
     if (!location) {
@@ -470,6 +495,7 @@ const mutations = {
             ...parsedData.appointment.timeSlot,
             ...appointmentType,
             day: weekName as DAY,
+            locationId: location.id,
             isBooked: true,
           },
           select: {
