@@ -136,7 +136,7 @@ model ServiceSettings {
   startTime String   @map("start_time")
   endTime   String   @map("end_time")
   duration  Int      @default(15)
-  fee Int @default(0)
+  fee       Int      @default(0)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -147,16 +147,17 @@ model ServiceSettings {
 }
 
 model TimeSlot {
-  id        String   @id @default(uuid())
-  doctorId  String?
-  serviceId String?
-  day       DAY
-  slotDate  String   @map("slot_date")
-  startTime String   @map("start_time")
-  endTime   String   @map("end_time")
-  isBooked  Boolean  @default(false) @map("is_booked")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id         String   @id @default(uuid())
+  doctorId   String?
+  serviceId  String?
+  locationId String?
+  day        DAY
+  slotDate   String   @map("slot_date")
+  startTime  String   @map("start_time")
+  endTime    String   @map("end_time")
+  isBooked   Boolean  @default(false) @map("is_booked")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   // Relations
   doctor      Doctor?      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
@@ -164,7 +165,7 @@ model TimeSlot {
   service     Service?     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@unique([doctorId, slotDate, startTime])
-  @@unique([serviceId, slotDate, startTime])
+  @@unique([locationId, serviceId, slotDate, startTime])
   @@map("time_slots")
 }
 
@@ -244,7 +245,7 @@ model Location {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  doctors Doctor[]
+  doctors      Doctor[]
   appointments Appointment[]
 
   @@map("locations")
