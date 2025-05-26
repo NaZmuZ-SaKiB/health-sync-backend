@@ -13,4 +13,10 @@ export const typeDefs = `#graphql
         patient: Patient!
         appointment: Appointment
     }
+
+    # Return Types
+    type ReportsResponse {
+        meta: Meta!
+        reports: [MedicalReport!]!
+    }
 `;
