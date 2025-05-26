@@ -6,7 +6,12 @@ import moment from "moment";
 const queries = {
   getTimeSlotsByDate: async (
     _: any,
-    args: { doctorId?: string; serviceId?: string; date: string },
+    args: {
+      doctorId?: string;
+      serviceId?: string;
+      locationId?: string;
+      date: string;
+    },
     { prisma }: TContext,
   ) => {
     if (!args.date) {
@@ -21,6 +26,8 @@ const queries = {
       );
     }
 
+    console.log("args", args);
+
     const slots = await prisma.timeSlot.findMany({
       where: {
         slotDate: args.date,
@@ -30,6 +37,7 @@ const queries = {
           },
           {
             serviceId: args.serviceId,
+            locationId: args.locationId,
           },
         ],
       },
