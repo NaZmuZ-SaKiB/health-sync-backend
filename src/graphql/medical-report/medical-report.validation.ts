@@ -5,9 +5,9 @@ const reportType = z.enum(
   Object.values(REPORT_TYPE) as [REPORT_TYPE, ...REPORT_TYPE[]],
   {
     errorMap: () => ({
-      message: "Invalid Day.",
+      message: "Invalid Report Type.",
     }),
-  }
+  },
 );
 
 const create = z.object({
@@ -18,7 +18,7 @@ const create = z.object({
   title: z
     .string({ required_error: "Title is required" })
     .min(1, { message: "Title cannot be empty" }),
-  reportType: reportType.optional(),
+  reportType: reportType,
   reportDate: z.coerce.date().optional(),
   fileUrl: z
     .string()
