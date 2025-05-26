@@ -12,7 +12,7 @@ const mutations = {
   createMedicalReport: async (
     _: any,
     args: TMedicalReportCreateInput,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [
       ROLE.DOCTOR,
@@ -32,16 +32,21 @@ const mutations = {
     }
 
     if (
-      parsedData.reportType === REPORT_TYPE.PRESCRIPTION &&
-      !parsedData.appointmentId
+      [REPORT_TYPE.PRESCRIPTION, REPORT_TYPE.LAB_REPORT].findIndex(
+        (type) => type === parsedData?.reportType,
+      ) !== -1 &&
+      !parsedData?.appointmentId
     ) {
       throw new AppError(
         status.BAD_REQUEST,
-        "Appointment id is required for prescription"
+        "Appointment id is required for" +
+          " " +
+          parsedData.reportType.toLowerCase().split(_).join(" ") +
+          ".",
       );
     }
 
-    if (parsedData.appointmentId) {
+    if (parsedData?.appointmentId) {
       const isAppointmentExist = await prisma.appointment.findUnique({
         where: { id: parsedData.appointmentId },
         select: { id: true, patientId: true, report: { select: { id: true } } },
@@ -51,10 +56,10 @@ const mutations = {
         throw new AppError(status.NOT_FOUND, "Appointment not found");
       }
 
-      if (parsedData.patientId !== isAppointmentExist.patientId) {
+      if (parsedData?.patientId !== isAppointmentExist.patientId) {
         throw new AppError(
           status.BAD_REQUEST,
-          "Patient and appointment patient are not same"
+          "Patient and appointment patient are not same",
         );
       }
 
