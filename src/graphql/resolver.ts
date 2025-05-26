@@ -24,6 +24,7 @@ export const resolvers = {
     ...ServiceSettings.resolvers.queries,
     ...TimeSlot.resolvers.queries,
     ...Appointment.resolvers.queries,
+    ...MedicalReport.resolvers.queries,
     ...Location.resolvers.queries,
     ...Image.resolvers.queries,
   },
@@ -49,4 +50,5 @@ export const resolvers = {
   ...Doctor.resolvers.relationalQuery,
   ...Service.resolvers.relationalQuery,
   ...Appointment.resolvers.relationalQuery,
+  ...MedicalReport.resolvers.relationalQuery,
 };
