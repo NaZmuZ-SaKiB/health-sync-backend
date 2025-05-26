@@ -1,12 +1,135 @@
-import { REPORT_TYPE, ROLE } from "@prisma/client";
-import { TContext } from "../../types";
+import {
+  MedicalReport as TMedicalReport,
+  Prisma,
+  REPORT_TYPE,
+  ROLE,
+} from "@prisma/client";
+import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
 import { TMedicalReportCreateInput } from "./medical-report.type";
 import { MedicalReport } from ".";
 import AppError from "../../errors/AppError";
 import status from "http-status";
+import calculatePagination from "../../utils/calculatePagination";
 
-const queries = {};
+const queries = {
+  getAllReports: async (
+    _: any,
+    queries: TFilters,
+    { prisma, currentUser }: TContext,
+  ) => {
+    await auth(prisma, currentUser);
+
+    const { page, limit, skip, sortBy, sortOrder } =
+      calculatePagination(queries);
+
+    const andConditions: Prisma.Enumerable<Prisma.MedicalReportWhereInput> = [];
+
+    andConditions.push({
+      reportType: {
+        not: REPORT_TYPE.PRESCRIPTION,
+      },
+    });
+
+    if (queries?.searchTerm) {
+      andConditions.push({
+        OR: [
+          ...["title", "notes"].map((field) => ({
+            [field]: {
+              contains: queries?.searchTerm,
+              mode: "insensitive",
+            },
+          })),
+          {
+            appointment: {
+              service: {
+                name: {
+                  contains: queries?.searchTerm,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            patient: {
+              user: {
+                email: {
+                  contains: queries?.searchTerm,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            patient: {
+              user: {
+                phoneNumber: {
+                  contains: queries?.searchTerm,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+        ],
+      });
+    }
+
+    if (queries?.reportType) {
+      andConditions.push({ reportType: queries?.reportType });
+    }
+
+    if (currentUser?.role === ROLE.PATIENT) {
+      andConditions.push({ patient: { user: { id: currentUser.id } } });
+    }
+
+    if (queries?.patientId) {
+      andConditions.push({ patient: { id: queries?.patientId } });
+    }
+
+    const reports = await prisma.medicalReport.findMany({
+      where: {
+        AND: andConditions,
+      },
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      skip,
+      take: limit,
+    });
+
+    const total = await prisma.medicalReport.count({
+      where: { AND: andConditions },
+    });
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return { reports, meta };
+  },
+};
+
+const relationalQuery = {
+  MedicalReport: {
+    patient: async (parent: TMedicalReport, _: any, { prisma }: TContext) => {
+      return await prisma.patient.findUnique({
+        where: { id: parent.patientId },
+      });
+    },
+
+    appointment: async (
+      parent: TMedicalReport,
+      _: any,
+      { prisma }: TContext,
+    ) => {
+      return await prisma.appointment.findUnique({
+        where: { id: parent.appointmentId as string },
+      });
+    },
+  },
+};
 
 const mutations = {
   createMedicalReport: async (
@@ -81,4 +204,4 @@ const mutations = {
   },
 };
 
-export const resolvers = { queries, mutations };
+export const resolvers = { queries, relationalQuery, mutations };
