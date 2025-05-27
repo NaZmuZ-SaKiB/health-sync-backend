@@ -39,18 +39,28 @@ const queries = {
     const andConditions: Prisma.Enumerable<Prisma.AppointmentWhereInput> = [];
 
     // retrun service appointmetns if current user is admin
-    if (
-      currentUser?.role === ROLE.ADMIN ||
-      currentUser?.role === ROLE.SUPER_ADMIN
-    ) {
-      andConditions.push({
-        serviceId: {
-          not: null,
-        },
-      });
-      andConditions.push({
-        doctorId: null,
-      });
+    if (!queries?.all) {
+      if (
+        currentUser?.role === ROLE.ADMIN ||
+        currentUser?.role === ROLE.SUPER_ADMIN
+      ) {
+        andConditions.push({
+          serviceId: {
+            not: null,
+          },
+        });
+        andConditions.push({
+          doctorId: null,
+        });
+      }
+    }
+
+    if (currentUser?.role === ROLE.DOCTOR) {
+      andConditions.push({ doctor: { user: { id: currentUser.id } } });
+    }
+
+    if (currentUser?.role === ROLE.PATIENT) {
+      andConditions.push({ patient: { user: { id: currentUser.id } } });
     }
 
     if (queries?.searchTerm) {
@@ -146,14 +156,6 @@ const queries = {
 
     if (queries?.date) {
       andConditions.push({ timeSlot: { slotDate: queries?.date } });
-    }
-
-    if (currentUser?.role === ROLE.DOCTOR) {
-      andConditions.push({ doctor: { user: { id: currentUser.id } } });
-    }
-
-    if (currentUser?.role === ROLE.PATIENT) {
-      andConditions.push({ patient: { user: { id: currentUser.id } } });
     }
 
     const appointments = await prisma.appointment.findMany({
