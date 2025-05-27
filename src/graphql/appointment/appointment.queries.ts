@@ -7,6 +7,7 @@ export const queries = `#graphql
         sortOrder: String
         status: APPOINTMENT_STATUS
         date: String
+        all: Boolean
     ): AppointmentsResponse!
 
     appointment(id: String!): Appointment!
