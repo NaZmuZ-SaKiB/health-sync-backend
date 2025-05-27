@@ -67,6 +67,12 @@ const queries = {
       andConditions.push({
         OR: [
           {
+            id: queries?.searchTerm,
+          },
+          {
+            doctorId: queries?.searchTerm,
+          },
+          {
             doctor: {
               user: {
                 firstName: {
@@ -95,6 +101,9 @@ const queries = {
                 },
               },
             },
+          },
+          {
+            patientId: queries?.searchTerm,
           },
           {
             patient: {
@@ -156,6 +165,10 @@ const queries = {
 
     if (queries?.date) {
       andConditions.push({ timeSlot: { slotDate: queries?.date } });
+    }
+
+    if (queries?.locationId) {
+      andConditions.push({ locationId: queries?.locationId });
     }
 
     const appointments = await prisma.appointment.findMany({
