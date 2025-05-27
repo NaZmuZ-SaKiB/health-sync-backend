@@ -6,5 +6,6 @@ export const queries = `#graphql
     sortBy: String
     sortOrder: String
     reportType: REPORT_TYPE
+    patientId: String
   ) : ReportsResponse!
 `;
