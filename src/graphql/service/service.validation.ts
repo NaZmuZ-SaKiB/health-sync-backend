@@ -24,4 +24,10 @@ const update = z.object({
     .optional(),
 });
 
-export const validations = { create, update };
+const remove = z.object({
+  ids: z
+    .array(z.string().nonempty({ message: "ID is required." }))
+    .min(1, { message: "At least one ID is required." }),
+});
+
+export const validations = { create, update, remove };
