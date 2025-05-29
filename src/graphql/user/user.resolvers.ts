@@ -27,7 +27,7 @@ const queries = {
   userById: async (
     _: any,
     args: { id: string },
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
@@ -88,7 +88,7 @@ const mutations = {
 
     const hashedPassword = await bcrypt.hash(
       parsedData.password,
-      Number(config.bcrypt_salt_rounds)
+      Number(config.bcrypt_salt_rounds),
     );
 
     const isUserExist = await prisma.user.findFirst({
@@ -121,7 +121,7 @@ const mutations = {
         role: user.role,
       },
       config.jwt.jwt_access_token_secret as string,
-      config.jwt.jwt_access_token_expires_in as string
+      config.jwt.jwt_access_token_expires_in as string,
     );
 
     return { token, success: true };
@@ -155,20 +155,20 @@ const mutations = {
     if (!isUserExist.isActive) {
       throw new AppError(
         status.UNAUTHORIZED,
-        "Your account is currently inactive."
+        "Your account is currently inactive.",
       );
     }
 
     if (isUserExist.role === ROLE.DOCTOR && !isUserExist?.doctor?.isVerified) {
       throw new AppError(
         status.UNAUTHORIZED,
-        "Your account is not verified yet."
+        "Your account is not verified yet.",
       );
     }
 
     const isPasswordMatch = await bcrypt.compare(
       parsedData.password,
-      isUserExist.password
+      isUserExist.password,
     );
 
     if (!isPasswordMatch) {
@@ -182,7 +182,7 @@ const mutations = {
         role: isUserExist.role,
       },
       config.jwt.jwt_access_token_secret as string,
-      config.jwt.jwt_access_token_expires_in as string
+      config.jwt.jwt_access_token_expires_in as string,
     );
 
     return { token, success: true };
@@ -191,7 +191,7 @@ const mutations = {
   updateProfilePicture: async (
     _: any,
     args: { id: string },
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser);
 
@@ -203,6 +203,46 @@ const mutations = {
       where: { id: currentUser?.id as string },
       data: {
         profilePictureId: args.id,
+      },
+    });
+
+    return { success: true };
+  },
+
+  updateUserStatus: async (
+    _: any,
+    args: { id: string },
+    { prisma, currentUser }: TContext,
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const user = await prisma.user.findUnique({
+      where: { id: args.id },
+      select: { isActive: true, role: true },
+    });
+
+    if (!user) {
+      throw new AppError(status.NOT_FOUND, "User not found.");
+    }
+
+    if (user.role === ROLE.SUPER_ADMIN) {
+      throw new AppError(
+        status.FORBIDDEN,
+        "Super admin cannot be deactivated.",
+      );
+    }
+
+    if (user.role === ROLE.ADMIN && currentUser?.role === ROLE.ADMIN) {
+      throw new AppError(
+        status.FORBIDDEN,
+        "Admin cannot deactivate another admin.",
+      );
+    }
+
+    await prisma.user.update({
+      where: { id: args.id },
+      data: {
+        isActive: !user.isActive,
       },
     });
 
