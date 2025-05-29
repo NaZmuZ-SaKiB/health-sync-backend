@@ -11,4 +11,8 @@ export const mutations = `#graphql
       description: String
       icon: String
    ): Service!
+
+   deleteServices(
+    ids: [String!]!
+   ): GenericSuccessResponse!
 `;
