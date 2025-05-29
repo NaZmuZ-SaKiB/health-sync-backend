@@ -139,7 +139,23 @@ const mutations = {
       },
       select: {
         id: true,
+        name: true,
+        appointments: {
+          take: 1,
+          select: {
+            id: true,
+          },
+        },
       },
+    });
+
+    services.forEach((service) => {
+      if (service.appointments.length > 0) {
+        throw new AppError(
+          status.FORBIDDEN,
+          `Service ${service.name} has appointments`,
+        );
+      }
     });
 
     const idsToDelete = services.map((item) => item.id);
