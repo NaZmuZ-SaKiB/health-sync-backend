@@ -121,6 +121,39 @@ const mutations = {
 
     return service;
   },
+
+  deleteServices: async (
+    _: any,
+    args: { ids: string[] },
+    { prisma, currentUser }: TContext,
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const parsedData = await Service.validations.remove.parseAsync(args);
+
+    const services = await prisma.service.findMany({
+      where: {
+        id: {
+          in: parsedData.ids,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    const idsToDelete = services.map((item) => item.id);
+
+    await prisma.service.deleteMany({
+      where: {
+        id: {
+          in: idsToDelete,
+        },
+      },
+    });
+
+    return { success: true };
+  },
 };
 
 export const resolvers = { queries, relationalQuery, mutations };
