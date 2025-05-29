@@ -4,6 +4,8 @@ import auth from "../../utils/auth";
 import { TPatientUpdateInput } from "./patient.type";
 import { Patient } from ".";
 import calculatePagination from "../../utils/calculatePagination";
+import AppError from "../../errors/AppError";
+import status from "http-status";
 
 const queries = {
   getAllPatients: async (
@@ -86,6 +88,24 @@ const queries = {
     };
 
     return { patients, meta };
+  },
+
+  patient: async (
+    _: any,
+    args: { id: string },
+    { prisma, currentUser }: TContext,
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    if (!args.id) {
+      throw new AppError(status.BAD_REQUEST, "Patient ID is required.");
+    }
+
+    const patient = await prisma.patient.findUnique({
+      where: { id: args.id },
+    });
+
+    return patient;
   },
 };
 
