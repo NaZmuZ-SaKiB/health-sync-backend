@@ -7,13 +7,20 @@ export const typeDefs = `#graphql
         allergies: String
         createdAt: String!
         updatedAt: String!
-        
+
         # Relations
         user: User!
         appointments: [Appointment!]!
         medicalReports: [MedicalReport!]!
     }
 
+    # Return Types
+    type PatientsResponse {
+        meta: Meta!
+        patients: [Patient!]!
+    }
+
+    # Inputs
     input PatientUpdateInput {
         emergencyContactName: String
         emergencyContactPhone: String
