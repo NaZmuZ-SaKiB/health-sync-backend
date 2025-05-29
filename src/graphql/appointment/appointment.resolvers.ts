@@ -200,7 +200,11 @@ const queries = {
     args: { id: string },
     { prisma, currentUser }: TContext,
   ) => {
-    await auth(prisma, currentUser, [ROLE.DOCTOR]);
+    await auth(prisma, currentUser, [
+      ROLE.DOCTOR,
+      ROLE.ADMIN,
+      ROLE.SUPER_ADMIN,
+    ]);
 
     if (!args.id) {
       throw new AppError(status.BAD_REQUEST, "Appointment ID is required.");
@@ -213,7 +217,10 @@ const queries = {
       },
     });
 
-    if (appointment?.doctor?.userId !== currentUser?.id) {
+    if (
+      appointment?.doctorId &&
+      appointment?.doctor?.userId !== currentUser?.id
+    ) {
       throw new AppError(
         status.BAD_REQUEST,
         "You are not authorized to view this appointment.",
