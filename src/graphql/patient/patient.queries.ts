@@ -8,4 +8,6 @@ export const queries = `#graphql
     gender: String
     bloodGroup: String
   ): PatientsResponse!
+
+  patient(id: String!): Patient!
 `;
