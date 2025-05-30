@@ -8,7 +8,15 @@ export const typeDefs = `#graphql
         createdAt: String!
 
         # Relations
-        doctor: Doctor!
+        doctor: Doctor
+        patient: Patient!
+        service: Service
         appointment: Appointment!
+    }
+
+    # Return Types
+    type ReviewsResponse {
+        meta: Meta!
+        reviews: [Review!]!
     }
 `;
