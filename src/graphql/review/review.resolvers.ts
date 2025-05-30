@@ -1,18 +1,144 @@
-import { ROLE } from "@prisma/client";
-import { TContext } from "../../types";
+import { Prisma, Review as TReview, ROLE } from "@prisma/client";
+import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
 import { TReviewCreateInput } from "./review.type";
 import { Review } from ".";
 import AppError from "../../errors/AppError";
 import status from "http-status";
+import calculatePagination from "../../utils/calculatePagination";
 
-const queries = {};
+const queries = {
+  getAllReviews: async (
+    _: any,
+    queries: TFilters,
+    { prisma, currentUser }: TContext,
+  ) => {
+    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+
+    const { page, limit, skip, sortBy, sortOrder } =
+      calculatePagination(queries);
+
+    const andConditions: Prisma.Enumerable<Prisma.ReviewWhereInput> = [];
+
+    if (currentUser?.role === ROLE.DOCTOR) {
+      andConditions.push({
+        doctor: {
+          userId: currentUser?.id,
+        },
+      });
+    }
+
+    if (queries?.searchTerm) {
+      andConditions.push({
+        OR: [
+          {
+            doctor: {
+              user: {
+                email: {
+                  contains: queries.searchTerm,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            service: {
+              name: {
+                contains: queries.searchTerm,
+                mode: "insensitive",
+              },
+            },
+          },
+          {
+            comment: {
+              contains: queries.searchTerm,
+              mode: "insensitive",
+            },
+          },
+        ],
+      });
+    }
+
+    if (queries?.type && queries?.type === "doctor") {
+      andConditions.push({
+        doctorId: {
+          not: null,
+        },
+        serviceId: null,
+      });
+    }
+
+    if (queries?.type && queries?.type === "service") {
+      andConditions.push({
+        serviceId: {
+          not: null,
+        },
+        doctorId: null,
+      });
+    }
+
+    const reviews = await prisma.review.findMany({
+      where: {
+        AND: andConditions,
+      },
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      skip,
+      take: limit,
+    });
+
+    const total = await prisma.review.count({
+      where: { AND: andConditions },
+    });
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return { reviews, meta };
+  },
+};
+
+const relationalQuery = {
+  Review: {
+    patient: async (parent: TReview, _: any, { prisma }: TContext) => {
+      return await prisma.patient.findUnique({
+        where: { id: parent.patientId },
+      });
+    },
+
+    doctor: async (parent: TReview, _: any, { prisma }: TContext) => {
+      if (!parent.doctorId) return null;
+
+      return await prisma.doctor.findUnique({
+        where: { id: parent.doctorId },
+      });
+    },
+
+    service: async (parent: TReview, _: any, { prisma }: TContext) => {
+      if (!parent.serviceId) return null;
+
+      return await prisma.service.findUnique({
+        where: { id: parent.serviceId },
+      });
+    },
+
+    appointment: async (parent: TReview, _: any, { prisma }: TContext) => {
+      return await prisma.appointment.findUnique({
+        where: { id: parent.appointmentId },
+      });
+    },
+  },
+};
 
 const mutations = {
   createReview: async (
     _: any,
     args: TReviewCreateInput,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.PATIENT]);
 
@@ -66,4 +192,4 @@ const mutations = {
   },
 };
 
-export const resolvers = { queries, mutations };
+export const resolvers = { queries, relationalQuery, mutations };
