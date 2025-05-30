@@ -56,6 +56,7 @@ export const typeDefs = `#graphql
     ${MedicalReport.queries}
     ${Location.queries}
     ${Image.queries}
+    ${Review.queries}
   }
 
   type Mutation {
