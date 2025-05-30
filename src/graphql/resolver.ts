@@ -28,6 +28,7 @@ export const resolvers = {
     ...MedicalReport.resolvers.queries,
     ...Location.resolvers.queries,
     ...Image.resolvers.queries,
+    ...Review.resolvers.queries,
   },
   Mutation: {
     ...User.resolvers.mutations,
@@ -52,4 +53,5 @@ export const resolvers = {
   ...Service.resolvers.relationalQuery,
   ...Appointment.resolvers.relationalQuery,
   ...MedicalReport.resolvers.relationalQuery,
+  ...Review.resolvers.relationalQuery,
 };
