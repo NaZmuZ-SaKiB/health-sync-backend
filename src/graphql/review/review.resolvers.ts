@@ -13,7 +13,11 @@ const queries = {
     queries: TFilters,
     { prisma, currentUser }: TContext,
   ) => {
-    await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
+    await auth(prisma, currentUser, [
+      ROLE.DOCTOR,
+      ROLE.ADMIN,
+      ROLE.SUPER_ADMIN,
+    ]);
 
     const { page, limit, skip, sortBy, sortOrder } =
       calculatePagination(queries);
