@@ -6,5 +6,6 @@ export const queries = `#graphql
     sortBy: String
     sortOrder: String
     type: String
+    serviceId: String
   ): ReviewsResponse!
 `;
