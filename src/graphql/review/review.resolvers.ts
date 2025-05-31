@@ -77,6 +77,12 @@ const queries = {
       });
     }
 
+    if (queries?.serviceId) {
+      andConditions.push({
+        serviceId: queries.serviceId,
+      });
+    }
+
     const reviews = await prisma.review.findMany({
       where: {
         AND: andConditions,
@@ -161,7 +167,7 @@ const mutations = {
         id: parsedData.appointmentId,
         patientId: user?.patient?.id,
       },
-      select: { id: true, doctorId: true },
+      select: { id: true, doctorId: true, serviceId: true },
     });
 
     if (!isAppointmentExists) {
@@ -181,7 +187,8 @@ const mutations = {
     await prisma.review.create({
       data: {
         patientId: user?.patient?.id as string,
-        doctorId: isAppointmentExists.doctorId,
+        doctorId: isAppointmentExists?.doctorId || null,
+        serviceId: isAppointmentExists?.serviceId || null,
         appointmentId: parsedData.appointmentId,
         rating: parsedData.rating,
         comment: parsedData.comment,
