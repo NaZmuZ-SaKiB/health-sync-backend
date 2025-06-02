@@ -2,12 +2,13 @@ import status from "http-status";
 import { User } from ".";
 import config from "../../config";
 import AppError from "../../errors/AppError";
-import { TContext } from "../../types";
+import { TContext, TFilters } from "../../types";
 import { jwtHelpers } from "../../utils/jwtHelper";
 import { TUserCretaeInput, TUserSigninInput } from "./user.type";
 import bcrypt from "bcrypt";
-import { ROLE, User as TUser } from "@prisma/client";
+import { Prisma, ROLE, User as TUser } from "@prisma/client";
 import auth from "../../utils/auth";
+import calculatePagination from "../../utils/calculatePagination";
 
 const queries = {
   me: async (_: any, __: any, { prisma, currentUser }: TContext) => {
@@ -42,17 +43,62 @@ const queries = {
     return user;
   },
 
-  users: async (_: any, __: any, { prisma, currentUser }: TContext) => {
+  getAllAdmins: async (
+    _: any,
+    queries: TFilters,
+    { prisma, currentUser }: TContext,
+  ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
+    const { page, limit, skip, sortBy, sortOrder } =
+      calculatePagination(queries);
+
+    const conditions: Prisma.UserWhereInput = {};
+
+    const userSearchableFields = [
+      "email",
+      "firstName",
+      "lastName",
+      "phoneNumber",
+    ];
+
+    if (queries?.searchTerm) {
+      conditions.OR = userSearchableFields.map((field) => ({
+        [field]: {
+          contains: queries?.searchTerm,
+          mode: "insensitive",
+        },
+      }));
+    }
+
+    if (queries?.gender) {
+      conditions.gender = queries?.gender;
+    }
+
     const users = await prisma.user.findMany({
+      where: conditions,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      skip,
+      take: limit,
       omit: {
         password: true,
         passwordResetCode: true,
       },
     });
 
-    return users;
+    const total = await prisma.user.count({
+      where: conditions,
+    });
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return { users, meta };
   },
 };
 
