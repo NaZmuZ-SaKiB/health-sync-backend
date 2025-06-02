@@ -13,11 +13,17 @@ export const typeDefs = `#graphql
         needPasswordChange: Boolean!
         createdAt: String!
         updatedAt: String!
-        
+
         # Relations
         patient: Patient
         doctor: Doctor
         profilePicture: Image
+    }
+
+    # Return Types
+    type UsersResponse {
+        meta: Meta!
+        users: [User!]!
     }
 
     type AuthResponse {
