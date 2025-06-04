@@ -54,6 +54,7 @@ const queries = {
       calculatePagination(queries);
 
     const conditions: Prisma.UserWhereInput = {};
+    conditions.role = ROLE.ADMIN;
 
     const userSearchableFields = [
       "email",
