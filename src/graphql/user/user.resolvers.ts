@@ -295,6 +295,78 @@ const mutations = {
 
     return { success: true };
   },
+
+  createAdmin: async (
+    _: any,
+    args: { email: string },
+    { prisma, currentUser }: TContext,
+  ) => {
+    await auth(prisma, currentUser, [ROLE.SUPER_ADMIN]);
+
+    const parsedData = await User.validations.createAdmin.parseAsync(args);
+
+    const isUserExists = await prisma.user.findUnique({
+      where: {
+        email: parsedData.email,
+      },
+    });
+
+    if (isUserExists) {
+      throw new AppError(status.CONFLICT, "Email already exist.");
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      config.admin_default_password as string,
+      Number(config.bcrypt_salt_rounds),
+    );
+
+    await prisma.user.create({
+      data: {
+        email: parsedData.email,
+        password: hashedPassword,
+        needPasswordChange: true,
+        role: ROLE.ADMIN,
+      },
+    });
+
+    return { success: true };
+  },
+
+  deleteAdmins: async (
+    _: any,
+    args: { ids: string[] },
+    { currentUser, prisma }: TContext,
+  ) => {
+    await auth(prisma, currentUser, [ROLE.SUPER_ADMIN]);
+
+    const parsedData = await User.validations.deleteAdmins.parseAsync(args);
+
+    const users = await prisma.user.findMany({
+      where: {
+        id: { in: parsedData.ids },
+      },
+    });
+
+    if (!users.length) {
+      throw new AppError(status.NOT_FOUND, "Users not found.");
+    }
+
+    for (const user of users) {
+      if (user.role === ROLE.SUPER_ADMIN) {
+        throw new AppError(status.FORBIDDEN, "Super admin cannot be deleted.");
+      }
+    }
+
+    const userIdsToDelete = users.map((item) => item.id);
+
+    await prisma.user.deleteMany({
+      where: {
+        id: { in: userIdsToDelete },
+      },
+    });
+
+    return { success: true };
+  },
 };
 
 export const resolvers = { queries, mutations, relationalQuery };
