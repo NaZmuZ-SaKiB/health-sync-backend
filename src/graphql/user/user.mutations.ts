@@ -13,4 +13,10 @@ export const mutations = `#graphql
     updateProfilePicture(id: String!): GenericSuccessResponse!
 
     updateUserStatus(id: String!): GenericSuccessResponse!
+
+    createAdmin(
+        email: String!
+    ): GenericSuccessResponse!
+
+    deleteAdmins(ids: [String!]!): GenericSuccessResponse!
 `;
