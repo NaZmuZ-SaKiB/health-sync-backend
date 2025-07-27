@@ -12,6 +12,7 @@ export default {
   super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
 
   doctor_default_password: process.env.DOCTOR_DEFAULT_PASSWORD,
+  admin_default_password: process.env.ADMIN_DEFAULT_PASSWORD,
 
   jwt: {
     jwt_access_token_secret: process.env.JWT_ACCESS_TOKEN_SECRET,
