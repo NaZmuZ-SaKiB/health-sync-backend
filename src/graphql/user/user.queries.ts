@@ -1,6 +1,8 @@
 export const queries = `#graphql
     me: User!
+
     userById(id: String!): User!
+
     getAllAdmins(
       page: String
       limit: String
@@ -9,4 +11,6 @@ export const queries = `#graphql
       sortOrder: String
       gender: String
     ): UsersResponse!
+
+    adminById(id: String!): User!
 `;
