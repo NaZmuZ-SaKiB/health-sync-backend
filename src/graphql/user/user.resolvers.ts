@@ -4,7 +4,11 @@ import config from "../../config";
 import AppError from "../../errors/AppError";
 import { TContext, TFilters } from "../../types";
 import { jwtHelpers } from "../../utils/jwtHelper";
-import { TUserCretaeInput, TUserSigninInput } from "./user.type";
+import {
+  TUserCretaeInput,
+  TUserSigninInput,
+  TUserUpdateInput,
+} from "./user.type";
 import bcrypt from "bcrypt";
 import { Prisma, ROLE, User as TUser } from "@prisma/client";
 import auth from "../../utils/auth";
@@ -100,6 +104,22 @@ const queries = {
     };
 
     return { users, meta };
+  },
+
+  adminById: async (
+    _: any,
+    { id }: { id: string },
+    { currentUser, prisma }: TContext,
+  ) => {
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new AppError(status.NOT_FOUND, "User not found");
+    }
+
+    return user;
   },
 };
 
@@ -233,6 +253,32 @@ const mutations = {
     );
 
     return { token, success: true };
+  },
+
+  updateProfile: async (
+    _: any,
+    args: TUserUpdateInput,
+    { currentUser, prisma }: TContext,
+  ) => {
+    await auth(prisma, currentUser, []);
+
+    const parsedData = await User.validations.update.parseAsync(args);
+
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser?.id as string },
+      select: { id: true },
+    });
+
+    if (!user) {
+      throw new AppError(status.NOT_FOUND, "User not found.");
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: parsedData,
+    });
+
+    return { success: true };
   },
 
   updateProfilePicture: async (
