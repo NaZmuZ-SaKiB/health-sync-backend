@@ -1,4 +1,11 @@
+import { GENDER } from "@prisma/client";
 import * as z from "zod";
+
+const gender = z.enum(Object.values(GENDER) as [GENDER, ...GENDER[]], {
+  errorMap: () => ({
+    message: "Invalid Gender.",
+  }),
+});
 
 const create = z
   .object({
@@ -42,6 +49,21 @@ const signin = z.object({
   password: z.string().min(1, { message: "Password is required" }),
 });
 
+const update = z.object({
+  firstName: z
+    .string()
+    .max(50, "First name must be less than 50 characters.")
+    .optional(),
+  lastName: z
+    .string()
+    .max(50, "Last name must be less than 50 characters.")
+    .optional(),
+  phoneNumber: z.string().optional(),
+  address: z.string().optional(),
+  dateOfBirth: z.string().optional(),
+  gender: gender.optional(),
+});
+
 const createAdmin = z.object({
   email: z
     .string()
@@ -57,6 +79,7 @@ const deleteAdmins = z.object({
 export const validations = {
   create,
   signin,
+  update,
   createAdmin,
   deleteAdmins,
 };
