@@ -4,6 +4,7 @@ export const typeDefs = `#graphql
         startTime: String!
         endTime: String!
         duration: Int!
+        fee: Float!
         createdAt: String!
         updatedAt: String!
 
