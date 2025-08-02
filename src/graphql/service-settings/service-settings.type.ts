@@ -3,4 +3,5 @@ export type TServiceSettingsUpdateInput = {
   startTime: string;
   endTime: string;
   duration: number;
+  fee: number;
 };
