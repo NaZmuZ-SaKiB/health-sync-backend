@@ -1,5 +1,11 @@
-import { APPOINTMENT_STATUS, PAYMENT_STATUS, ROLE } from "@prisma/client";
-import { TContext } from "../../types";
+import {
+  Prisma,
+  APPOINTMENT_STATUS,
+  PAYMENT_STATUS,
+  ROLE,
+  Payment as TPayment,
+} from "@prisma/client";
+import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
 import { TPaymentInitInput, TPaymentUpdateInput } from "./payment.type";
 import { Payment } from ".";
@@ -8,8 +14,108 @@ import status from "http-status";
 import { utils } from "./payment.utils";
 import config from "../../config";
 import axios from "axios";
+import calculatePagination from "../../utils/calculatePagination";
 
-const queries = {};
+const queries = {
+  getAllPayments: async (
+    _: any,
+    queries: TFilters,
+    { currentUser, prisma }: TContext,
+  ) => {
+    await auth(prisma, currentUser, [
+      ROLE.PATIENT,
+      ROLE.ADMIN,
+      ROLE.SUPER_ADMIN,
+    ]);
+
+    const { page, limit, skip, sortBy, sortOrder } =
+      calculatePagination(queries);
+
+    const andConditions: Prisma.Enumerable<Prisma.PaymentWhereInput> = [];
+
+    if (currentUser?.role === ROLE.PATIENT) {
+      andConditions.push({
+        appointment: {
+          patient: {
+            userId: currentUser?.id,
+          },
+        },
+      });
+    }
+
+    andConditions.push({
+      status: {
+        not: {
+          equals: PAYMENT_STATUS.PENDING,
+        },
+      },
+    });
+
+    if (queries?.searchTerm) {
+      andConditions.push({
+        OR: [
+          {
+            details: {
+              contains: queries.searchTerm,
+              mode: "insensitive",
+            },
+          },
+          {
+            appointment: {
+              patient: {
+                user: {
+                  email: {
+                    contains: queries.searchTerm,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            },
+          },
+        ],
+      });
+    }
+
+    if (queries?.status) {
+      andConditions.push({
+        status: queries?.status,
+      });
+    }
+
+    const payments = await prisma.payment.findMany({
+      where: {
+        AND: andConditions,
+      },
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+      skip,
+      take: limit,
+    });
+
+    const total = await prisma.payment.count({
+      where: { AND: andConditions },
+    });
+
+    const meta = {
+      page,
+      limit,
+      total,
+    };
+
+    return { payments, meta };
+  },
+};
+
+const relationalQuery = {
+  Payment: {
+    appointment: async (parent: TPayment, _: any, { prisma }: TContext) => {
+      return await prisma.appointment.findUnique({
+        where: { id: parent.appointmentId },
+      });
+    },
+  },
+};
 
 const mutations = {
   updatePayment: async (
@@ -177,4 +283,4 @@ const mutations = {
   },
 };
 
-export const resolvers = { queries, mutations };
+export const resolvers = { queries, relationalQuery, mutations };
