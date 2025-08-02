@@ -14,10 +14,10 @@ import express from "express";
 import cors from "cors";
 import { ApolloServer } from "@apollo/server";
 import bodyParser from "body-parser";
-import { expressMiddleware } from "@apollo/server/express4";
 import MainRouter from "./route";
 import cron from "node-cron";
 import { AppointmentService } from "./modules/appointment/appointment.service";
+import { expressMiddleware } from "@as-integrations/express5";
 
 export const prisma = new PrismaClient();
 
