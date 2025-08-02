@@ -5,3 +5,7 @@ export type TPaymentUpdateInput = {
   transactionId?: string;
   status?: PAYMENT_STATUS;
 };
+
+export type TPaymentInitInput = {
+  appointmentId?: string;
+};
