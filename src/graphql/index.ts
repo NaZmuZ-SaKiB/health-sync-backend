@@ -3,7 +3,7 @@ import { typeDefs } from "./schema";
 import { resolvers } from "./resolver";
 import globalErrorHandler from "../errors/globalErrorHandler";
 
-const createApolloGraphqlServer = async () => {
+const createApolloGraphqlServer = () => {
   return new ApolloServer({
     typeDefs,
     resolvers,
