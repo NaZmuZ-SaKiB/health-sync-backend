@@ -5,6 +5,7 @@ export const typeDefs = `#graphql
         paymentDate: String!
         transactionId: String
         status: PAYMENT_STATUS!
+        details: String
         createdAt: String!
         updatedAt: String!
 
