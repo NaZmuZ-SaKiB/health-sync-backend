@@ -21,6 +21,7 @@ const update = z
     duration: z
       .number({ required_error: "Duration is required" })
       .min(15, "Duration must be at least 15 minutes"),
+    fee: z.number().min(0, "Fee must be non-negative"),
   })
   .refine(
     (data) => {
