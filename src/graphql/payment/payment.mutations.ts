@@ -4,4 +4,8 @@ export const mutations = `#graphql
         transactionId: String
         status: PAYMENT_STATUS
     ): GenericSuccessResponse!
+
+    paymentInit(
+        appointmentId: String
+    ): String!
 `;
