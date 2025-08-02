@@ -9,7 +9,13 @@ export const typeDefs = `#graphql
         createdAt: String!
         updatedAt: String!
 
-        # Relations 
+        # Relations
         appointment: Appointment!
+    }
+
+    # Return Types
+    type PaymentsResponse {
+      meta: Meta!
+      payments: [Payment!]!
     }
 `;
