@@ -7,7 +7,7 @@ const status = z.enum(
     errorMap: () => ({
       message: "Invalid Payment Status.",
     }),
-  }
+  },
 );
 
 const update = z.object({
@@ -16,4 +16,8 @@ const update = z.object({
   status: status.optional(),
 });
 
-export const validations = { update };
+const paymentInit = z.object({
+  appointmentId: z.string().optional(),
+});
+
+export const validations = { update, paymentInit };
