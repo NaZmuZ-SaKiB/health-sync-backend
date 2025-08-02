@@ -1,7 +1,12 @@
 import bcrypt from "bcrypt";
 // import { startStandaloneServer } from "@apollo/server/standalone";
 import createApolloGraphqlServer from "./graphql";
-import { PrismaClient, ROLE } from "@prisma/client";
+import {
+  APPOINTMENT_STATUS,
+  PAYMENT_STATUS,
+  PrismaClient,
+  ROLE,
+} from "@prisma/client";
 import { TContext } from "./types";
 import { jwtHelpers } from "./utils/jwtHelper";
 import config from "./config";
@@ -11,6 +16,8 @@ import { ApolloServer } from "@apollo/server";
 import bodyParser from "body-parser";
 import { expressMiddleware } from "@apollo/server/express4";
 import MainRouter from "./route";
+import cron from "node-cron";
+import { AppointmentService } from "./modules/appointment/appointment.service";
 
 export const prisma = new PrismaClient();
 
@@ -71,8 +78,14 @@ const main = async () => {
           currentUser,
         };
       },
-    }),
+    }) as any,
   );
+
+  // Cron Jobs
+  cron.schedule("*/5 * * * *", async () => {
+    console.log("cencelling unpaid appointments...");
+    await AppointmentService.cancelUnpaidAppointments();
+  });
 
   // Application Routes
   app.use("/api", MainRouter);
