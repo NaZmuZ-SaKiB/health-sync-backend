@@ -177,7 +177,7 @@ model Appointment {
   locationId     String?
   slotId         String?            @unique
   canceledSlotId String?
-  status         APPOINTMENT_STATUS @default(SCHEDULED)
+  status         APPOINTMENT_STATUS @default(PENDING_PAYMENT)
   reason         String?
   notes          String?
   createdAt      DateTime           @default(now()) @map("created_at")
@@ -342,6 +342,7 @@ enum DAY {
 }
 
 enum APPOINTMENT_STATUS {
+  PENDING_PAYMENT
   SCHEDULED
   COMPLETED
   CANCELLED
