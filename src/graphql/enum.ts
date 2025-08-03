@@ -30,6 +30,7 @@ export const enumTypedef = `#graphql
     }
 
     enum APPOINTMENT_STATUS {
+        PENDING_PAYMENT
         SCHEDULED
         COMPLETED
         CANCELLED
