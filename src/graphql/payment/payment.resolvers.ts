@@ -55,8 +55,8 @@ const queries = {
       andConditions.push({
         OR: [
           {
-            details: {
-              contains: queries.searchTerm,
+            transactionId: {
+              equals: queries.searchTerm,
               mode: "insensitive",
             },
           },
