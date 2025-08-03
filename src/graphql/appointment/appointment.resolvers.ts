@@ -602,7 +602,10 @@ const mutations = {
 
     if (
       parsedData.status &&
-      appointment.status !== APPOINTMENT_STATUS.SCHEDULED
+      ![
+        APPOINTMENT_STATUS.PENDING_PAYMENT,
+        APPOINTMENT_STATUS.SCHEDULED,
+      ].includes(appointment.status as any)
     ) {
       throw new AppError(status.FORBIDDEN, "Status can't be updated now.");
     }
