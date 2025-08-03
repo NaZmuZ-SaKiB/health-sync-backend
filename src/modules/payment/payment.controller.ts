@@ -38,6 +38,7 @@ const success: RequestHandler = async (req, res) => {
   await PaymentService.updatePayment(req.body.tran_id, {
     status: PAYMENT_STATUS.COMPLETED,
     details: JSON.stringify(paymentDetails),
+    transactionId: req.body?.bank_tran_id,
   });
 
   res.redirect((config.ssl.payment_result_page as string) + queryString);
