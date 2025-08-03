@@ -1,4 +1,4 @@
-import { PAYMENT_STATUS, Prisma } from "@prisma/client";
+import { APPOINTMENT_STATUS, PAYMENT_STATUS, Prisma } from "@prisma/client";
 import { prisma } from "../..";
 
 const updatePayment = async (
@@ -14,9 +14,20 @@ const updatePayment = async (
 
   if (!payment) return;
 
-  await prisma.payment.update({
-    where: { id: payment.id },
-    data,
+  await prisma.$transaction(async (tx) => {
+    await tx.payment.update({
+      where: { id: payment.id },
+      data,
+    });
+
+    if (data.status === PAYMENT_STATUS.COMPLETED) {
+      await tx.appointment.update({
+        where: { id: appointmentId },
+        data: {
+          status: APPOINTMENT_STATUS.SCHEDULED,
+        },
+      });
+    }
   });
 };
 
