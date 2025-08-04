@@ -3,15 +3,15 @@ export const typeDefs = `#graphql
         id: ID!
         name: String!
         description: String
-        icon: String
         createdAt: String!
         updatedAt: String!
 
         # Relations
         doctors: [Doctor!]!
+        icon: Image
     }
 
-    # Return Types 
+    # Return Types
     type SpecialtyCreateUpdateResponse {
         success: Boolean!
         specialty: Specialty!
