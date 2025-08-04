@@ -1,4 +1,4 @@
-import { Prisma, ROLE } from "@prisma/client";
+import { Prisma, ROLE, Specialty as TSpecialty } from "@prisma/client";
 import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
 import { TSpecialtyCreate, TSpecialtyUpdate } from "./specialty.type";
@@ -11,7 +11,7 @@ const queries = {
   getAllSpecialties: async (
     _: any,
     queries: TFilters,
-    { prisma }: TContext
+    { prisma }: TContext,
   ) => {
     const { page, limit, skip, sortBy, sortOrder } =
       calculatePagination(queries);
@@ -62,11 +62,23 @@ const queries = {
   },
 };
 
+const relationalQuery = {
+  Specialty: {
+    icon: async (parent: TSpecialty, _: any, { prisma }: TContext) => {
+      if (!parent.iconId) return null;
+
+      return await prisma.image.findUnique({
+        where: { id: parent.iconId },
+      });
+    },
+  },
+};
+
 const mutations = {
   createSpecialty: async (
     _: any,
     args: TSpecialtyCreate,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
@@ -81,6 +93,24 @@ const mutations = {
       throw new AppError(status.CONFLICT, "Specialty already exists.");
     }
 
+    if (parsedData?.iconId) {
+      const isIconExist = await prisma.image.findUnique({
+        where: { id: parsedData.iconId },
+        select: { id: true, isProfilePicture: true },
+      });
+
+      if (!isIconExist) {
+        throw new AppError(status.NOT_FOUND, "Icon not found.");
+      }
+
+      if (isIconExist?.isProfilePicture) {
+        throw new AppError(
+          status.BAD_REQUEST,
+          "Icon can't be a profile picture.",
+        );
+      }
+    }
+
     const specialty = await prisma.specialty.create({ data: parsedData });
 
     return { success: true, specialty };
@@ -89,11 +119,29 @@ const mutations = {
   updateSpecialty: async (
     _: any,
     args: TSpecialtyUpdate,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
     const parsedData = await Specialty.validations.update.parseAsync(args);
+
+    if (parsedData?.iconId) {
+      const isIconExist = await prisma.image.findUnique({
+        where: { id: parsedData.iconId },
+        select: { id: true, isProfilePicture: true },
+      });
+
+      if (!isIconExist) {
+        throw new AppError(status.NOT_FOUND, "Icon not found.");
+      }
+
+      if (isIconExist?.isProfilePicture) {
+        throw new AppError(
+          status.BAD_REQUEST,
+          "Icon can't be a profile picture.",
+        );
+      }
+    }
 
     const { specialtyId, ...updateData } = parsedData;
 
@@ -117,7 +165,7 @@ const mutations = {
   removeSpecialties: async (
     _: any,
     args: { ids: string[] },
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
@@ -138,7 +186,7 @@ const mutations = {
       if (specialty._count.doctors > 0) {
         throw new AppError(
           status.BAD_REQUEST,
-          `Specialty ${specialty.name} is assigned to doctors.`
+          `Specialty ${specialty.name} is assigned to doctors.`,
         );
       }
     });
@@ -153,4 +201,4 @@ const mutations = {
   },
 };
 
-export const resolvers = { queries, mutations };
+export const resolvers = { queries, relationalQuery, mutations };
