@@ -85,12 +85,13 @@ model Specialty {
   id          String   @id @default(uuid())
   name        String   @unique
   description String?
-  icon        String?
+  iconId      String?  @unique
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
   doctors Doctor[]
+  icon    Image?   @relation(fields: [iconId], references: [id])
 
   @@map("specialties")
 }
@@ -118,7 +119,7 @@ model Service {
   serviceSettingsId String?  @unique
   name              String   @unique
   description       String?
-  icon              String?
+  iconId            String?  @unique
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
@@ -127,6 +128,7 @@ model Service {
   timeSlots       TimeSlot[]
   appointments    Appointment[]
   reviews         Review[]
+  icon            Image?           @relation(fields: [iconId], references: [id])
 
   @@map("services")
 }
@@ -240,7 +242,7 @@ model Location {
   address     String
   phoneNumber String? @map("phone_number")
   description String?
-  image       String?
+  imageId     String? @unique
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -248,6 +250,7 @@ model Location {
   // Relations
   doctors      Doctor[]
   appointments Appointment[]
+  image        Image?        @relation(fields: [imageId], references: [id])
 
   @@map("locations")
 }
@@ -270,7 +273,10 @@ model Image {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  user User?
+  user      User?
+  specialty Specialty?
+  service   Service?
+  location  Location?
 
   @@map("images")
 }
