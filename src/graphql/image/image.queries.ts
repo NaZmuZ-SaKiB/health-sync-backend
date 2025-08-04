@@ -3,5 +3,6 @@ export const queries = `#graphql
         page: String
         limit: String
         searchTerm: String
+        isProfilePicture: Boolean
     ): ImagesResponse!
 `;
