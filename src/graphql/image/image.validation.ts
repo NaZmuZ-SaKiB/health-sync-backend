@@ -60,7 +60,9 @@ const create = z.array(
       })
       .nonempty({ message: "Thumbnail URL cannot be empty." })
       .url({ message: "Thumbnail URL must be a valid URL." }),
-  })
+
+    isProfilePicture: z.boolean().default(false),
+  }),
 );
 
 const update = z.object({
