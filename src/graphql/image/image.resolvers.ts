@@ -9,7 +9,7 @@ const queries = {
   getAllImages: async (
     _: any,
     queries: TFilters,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser);
 
@@ -46,6 +46,10 @@ const queries = {
       };
     }
 
+    if ("isProfilePicture" in queries) {
+      conditions.isProfilePicture = queries?.isProfilePicture;
+    }
+
     const images = await prisma.image.findMany({
       where: conditions,
       orderBy: {
@@ -73,7 +77,7 @@ const mutations = {
   createImages: async (
     _: any,
     args: TImageCreateInput,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser);
 
