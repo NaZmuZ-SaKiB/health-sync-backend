@@ -88,6 +88,10 @@ const mutations = {
         ...item,
         userId: currentUser?.id as string,
         userType: currentUser?.role as ROLE,
+        isProfilePicture:
+          currentUser?.role === ROLE.PATIENT ||
+          currentUser?.role === ROLE.DOCTOR ||
+          item.isProfilePicture === true,
       })),
     });
 
