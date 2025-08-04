@@ -1,7 +1,7 @@
 export type TSpecialtyCreate = {
   name: string;
   description?: string;
-  icon?: string;
+  iconId?: string;
 };
 
 export type TSpecialtyUpdate = Partial<TSpecialtyCreate> & {
