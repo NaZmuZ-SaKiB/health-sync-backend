@@ -253,17 +253,18 @@ model Location {
 }
 
 model Image {
-  id           String @id @default(uuid())
-  userId       String
-  userType     ROLE   @map("user_type")
-  name         String
-  publicId     String @map("public_id")
-  height       Int
-  width        Int
-  format       String
-  url          String
-  secureUrl    String @map("secure_url")
-  thumbnailUrl String @map("thumbnail_url")
+  id               String  @id @default(uuid())
+  userId           String
+  userType         ROLE    @map("user_type")
+  name             String
+  publicId         String  @map("public_id")
+  height           Int
+  width            Int
+  format           String
+  url              String
+  secureUrl        String  @map("secure_url")
+  thumbnailUrl     String  @map("thumbnail_url")
+  isProfilePicture Boolean @default(false) @map("is_profile_picture")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
