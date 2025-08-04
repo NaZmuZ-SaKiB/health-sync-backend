@@ -10,10 +10,11 @@ export const typeDefs = `#graphql
         url: String!
         secureUrl: String!
         thumbnailUrl: String!
+        isProfilePicture: Boolean!
         createdAt: String!
         updatedAt: String!
 
-        # Relations 
+        # Relations
         user: User!
     }
 
@@ -23,7 +24,7 @@ export const typeDefs = `#graphql
         images: [Image!]!
     }
 
-    # Inputs 
+    # Inputs
     input ImagesCreateInput {
         name: String!
         publicId: String!
@@ -33,5 +34,6 @@ export const typeDefs = `#graphql
         url: String!
         secureUrl: String!
         thumbnailUrl: String!
+        isProfilePicture: Boolean
     }
 `;
