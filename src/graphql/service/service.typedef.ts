@@ -3,11 +3,11 @@ export const typeDefs = `#graphql
         id: ID!
         name: String!
         description: String
-        icon: String
         createdAt: String!
         updatedAt: String!
 
         # Relations
+        icon: Image
         serviceSettings: ServiceSettings
         timeSlots: [TimeSlot!]!
         appointments: [Appointment!]!
