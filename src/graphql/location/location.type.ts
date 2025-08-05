@@ -4,7 +4,7 @@ export type TLocationCreateInput = {
   address: string;
   phoneNumber: string;
   description?: string;
-  image?: string;
+  imageId?: string;
 };
 
 export type TLocationUpdateInput = Partial<TLocationCreateInput> & {
