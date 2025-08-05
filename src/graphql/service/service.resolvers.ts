@@ -67,6 +67,14 @@ const relationalQuery = {
         where: { id: parent.serviceSettingsId },
       });
     },
+
+    icon: async (parent: TService, _: any, { prisma }: TContext) => {
+      if (!parent.iconId) return null;
+
+      return await prisma.image.findUnique({
+        where: { id: parent.iconId },
+      });
+    },
   },
 };
 
@@ -87,6 +95,24 @@ const mutations = {
 
     if (!!isExist) {
       throw new AppError(status.CONFLICT, "Service already exists.");
+    }
+
+    if (parsedData?.iconId) {
+      const isIconExist = await prisma.image.findUnique({
+        where: { id: parsedData.iconId },
+        select: { id: true, isProfilePicture: true },
+      });
+
+      if (!isIconExist) {
+        throw new AppError(status.NOT_FOUND, "Icon not found.");
+      }
+
+      if (isIconExist?.isProfilePicture) {
+        throw new AppError(
+          status.BAD_REQUEST,
+          "Icon can't be a profile picture.",
+        );
+      }
     }
 
     await prisma.service.create({ data: parsedData });
@@ -112,6 +138,24 @@ const mutations = {
 
     if (!isService) {
       throw new AppError(status.NOT_FOUND, "Service not found.");
+    }
+
+    if (parsedData?.iconId) {
+      const isIconExist = await prisma.image.findUnique({
+        where: { id: parsedData.iconId },
+        select: { id: true, isProfilePicture: true },
+      });
+
+      if (!isIconExist) {
+        throw new AppError(status.NOT_FOUND, "Icon not found.");
+      }
+
+      if (isIconExist?.isProfilePicture) {
+        throw new AppError(
+          status.BAD_REQUEST,
+          "Icon can't be a profile picture.",
+        );
+      }
     }
 
     const service = await prisma.service.update({
