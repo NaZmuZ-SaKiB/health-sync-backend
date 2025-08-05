@@ -5,7 +5,7 @@ export const mutations = `#graphql
         address: String!
         phoneNumber: String!
         description: String
-        image: String
+        imageId: String
     ):Location!
 
     updateLocation(
@@ -15,7 +15,7 @@ export const mutations = `#graphql
         address: String,
         phoneNumber: String,
         description: String,
-        icon: String
+        imageId: String
     ):Location!
 
     removeLocations(ids: [String!]!): GenericSuccessResponse!
