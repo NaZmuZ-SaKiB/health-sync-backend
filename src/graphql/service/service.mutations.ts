@@ -2,14 +2,14 @@ export const mutations = `#graphql
    createService(
     name: String!
     description: String
-    icon: String
+    iconId: String
    ): GenericSuccessResponse!
 
    updateService(
       serviceId: String!
       name: String
       description: String
-      icon: String
+      iconId: String
    ): Service!
 
    deleteServices(
