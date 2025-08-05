@@ -6,22 +6,14 @@ const create = z.object({
     .min(3, { message: "Service name must have min 3 chars." })
     .max(255),
   description: z.string().max(255).optional(),
-  icon: z
-    .string()
-    .nonempty()
-    .url({ message: "Invalid URL for icon." })
-    .optional(),
+  iconId: z.string().nonempty().optional(),
 });
 
 const update = z.object({
   serviceId: z.string({ required_error: "Service Id Required." }),
   name: z.string().max(255).optional(),
   description: z.string().max(255).optional(),
-  icon: z
-    .string()
-    .nonempty()
-    .url({ message: "Invalid URL for icon." })
-    .optional(),
+  iconId: z.string().nonempty().optional(),
 });
 
 const remove = z.object({
