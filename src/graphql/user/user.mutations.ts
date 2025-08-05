@@ -27,5 +27,10 @@ export const mutations = `#graphql
         email: String!
     ): GenericSuccessResponse!
 
+    changePassword(
+        password: String!
+        confirmPassword: String!
+    ): GenericSuccessResponse!
+
     deleteAdmins(ids: [String!]!): GenericSuccessResponse!
 `;
