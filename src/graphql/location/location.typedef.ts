@@ -6,11 +6,11 @@ export const typeDefs = `#graphql
         address: String!
         phoneNumber: String!
         description: String
-        image: String
         createdAt: String!
         updatedAt: String!
 
         # Relations
+        image: Image
         doctors: [Doctor!]!
         appointments: [Appointment]
     }
