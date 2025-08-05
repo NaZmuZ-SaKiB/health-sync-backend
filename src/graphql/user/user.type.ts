@@ -19,3 +19,8 @@ export type TUserSigninInput = {
   email: String;
   password: String;
 };
+
+export type TChangePasswordInput = {
+  password: String;
+  confirmPassword: String;
+};
