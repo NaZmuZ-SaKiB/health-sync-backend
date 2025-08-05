@@ -6,7 +6,7 @@ const create = z.object({
   address: z.string().nonempty("Address is required"),
   phoneNumber: z.string().nonempty("Phone number is required"),
   description: z.string().optional(),
-  image: z.string().optional(),
+  imageId: z.string().nonempty().optional(),
 });
 
 const update = create.partial().extend({
