@@ -1,4 +1,4 @@
-import { Prisma, ROLE } from "@prisma/client";
+import { Prisma, ROLE, Location as TLocation } from "@prisma/client";
 import { TContext, TFilters } from "../../types";
 import auth from "../../utils/auth";
 import { TLocationCreateInput, TLocationUpdateInput } from "./location.type";
@@ -60,15 +60,45 @@ const queries = {
   },
 };
 
+const relationalQuery = {
+  Location: {
+    image: async (parent: TLocation, _: any, { prisma }: TContext) => {
+      if (!parent.imageId) return null;
+
+      return await prisma.image.findUnique({
+        where: { id: parent.imageId },
+      });
+    },
+  },
+};
+
 const mutations = {
   createLocation: async (
     _: any,
     args: TLocationCreateInput,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
     const parsedData = await Location.validations.create.parseAsync(args);
+
+    if (parsedData?.imageId) {
+      const isImageExist = await prisma.image.findUnique({
+        where: { id: parsedData.imageId },
+        select: { id: true, isProfilePicture: true },
+      });
+
+      if (!isImageExist) {
+        throw new AppError(status.NOT_FOUND, "Image not found.");
+      }
+
+      if (isImageExist?.isProfilePicture) {
+        throw new AppError(
+          status.BAD_REQUEST,
+          "Image can't be a profile picture.",
+        );
+      }
+    }
 
     const location = await prisma.location.create({
       data: parsedData,
@@ -80,12 +110,30 @@ const mutations = {
   updateLocation: async (
     _: any,
     args: TLocationUpdateInput,
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
     const parsedData = await Location.validations.update.parseAsync(args);
     const { locationId, ...updateData } = parsedData;
+
+    if (parsedData?.imageId) {
+      const isImageExist = await prisma.image.findUnique({
+        where: { id: parsedData.imageId },
+        select: { id: true, isProfilePicture: true },
+      });
+
+      if (!isImageExist) {
+        throw new AppError(status.NOT_FOUND, "Image not found.");
+      }
+
+      if (isImageExist?.isProfilePicture) {
+        throw new AppError(
+          status.BAD_REQUEST,
+          "Image can't be a profile picture.",
+        );
+      }
+    }
 
     const isLocation = await prisma.location.findUnique({
       where: { id: locationId },
@@ -107,7 +155,7 @@ const mutations = {
   removeLocations: async (
     _: any,
     args: { ids: string[] },
-    { prisma, currentUser }: TContext
+    { prisma, currentUser }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
@@ -128,7 +176,7 @@ const mutations = {
       if (location._count.doctors > 0) {
         throw new AppError(
           status.BAD_REQUEST,
-          `Location ${location.name} has doctors.`
+          `Location ${location.name} has doctors.`,
         );
       }
     });
@@ -143,4 +191,4 @@ const mutations = {
   },
 };
 
-export const resolvers = { queries, mutations };
+export const resolvers = { queries, relationalQuery, mutations };
