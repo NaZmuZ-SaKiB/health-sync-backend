@@ -5,6 +5,7 @@ import AppError from "../../errors/AppError";
 import { TContext, TFilters } from "../../types";
 import { jwtHelpers } from "../../utils/jwtHelper";
 import {
+  TChangePasswordInput,
   TUserCretaeInput,
   TUserSigninInput,
   TUserUpdateInput,
@@ -207,6 +208,7 @@ const mutations = {
         password: true,
         role: true,
         isActive: true,
+        needPasswordChange: true,
         doctor: {
           select: {
             isVerified: true,
@@ -252,7 +254,11 @@ const mutations = {
       config.jwt.jwt_access_token_expires_in as string,
     );
 
-    return { token, success: true };
+    return {
+      token,
+      success: true,
+      needPasswordChange: isUserExist.needPasswordChange,
+    };
   },
 
   updateProfile: async (
@@ -408,6 +414,31 @@ const mutations = {
     await prisma.user.deleteMany({
       where: {
         id: { in: userIdsToDelete },
+      },
+    });
+
+    return { success: true };
+  },
+
+  changePassword: async (
+    _: any,
+    args: TChangePasswordInput,
+    { currentUser, prisma }: TContext,
+  ) => {
+    await auth(prisma, currentUser, []);
+
+    const parsedData = await User.validations.changePassword.parseAsync(args);
+
+    const hashedPassword = await bcrypt.hash(
+      parsedData.password,
+      Number(config.bcrypt_salt_rounds),
+    );
+
+    await prisma.user.update({
+      where: { id: currentUser?.id },
+      data: {
+        password: hashedPassword,
+        needPasswordChange: false,
       },
     });
 
