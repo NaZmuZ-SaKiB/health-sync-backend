@@ -81,6 +81,12 @@ const queries = {
       });
     }
 
+    if (queries?.doctorId) {
+      andConditions.push({
+        doctorId: queries.doctorId,
+      });
+    }
+
     if (queries?.serviceId) {
       andConditions.push({
         serviceId: queries.serviceId,
