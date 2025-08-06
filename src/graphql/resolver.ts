@@ -10,6 +10,7 @@ import { Payment } from "./payment";
 import { Review } from "./review";
 import { Service } from "./service";
 import { ServiceSettings } from "./service-settings";
+import { Setting } from "./setting";
 import { Specialty } from "./specialty";
 import { TimeSlot } from "./time-slot";
 import { User } from "./user";
@@ -30,6 +31,7 @@ export const resolvers = {
     ...Location.resolvers.queries,
     ...Image.resolvers.queries,
     ...Review.resolvers.queries,
+    ...Setting.resolvers.queries,
   },
   Mutation: {
     ...User.resolvers.mutations,
@@ -47,6 +49,7 @@ export const resolvers = {
     ...Image.resolvers.mutations,
     ...Notification.resolvers.mutations,
     ...Review.resolvers.mutations,
+    ...Setting.resolvers.mutations,
   },
   // Relational Queries
   ...User.resolvers.relationalQuery,
