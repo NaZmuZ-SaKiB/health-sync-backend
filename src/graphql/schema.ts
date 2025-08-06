@@ -14,6 +14,7 @@ import { Location } from "./location";
 import { Image } from "./image";
 import { Service } from "./service";
 import { ServiceSettings } from "./service-settings";
+import { Setting } from "./setting";
 
 export const typeDefs = `#graphql
   ${User.typeDefs}
@@ -31,6 +32,7 @@ export const typeDefs = `#graphql
   ${Image.typeDefs}
   ${Notification.typeDefs}
   ${Review.typeDefs}
+  ${Setting.typeDefs}
   ${enumTypedef}
 
   type GenericSuccessResponse {
@@ -58,6 +60,7 @@ export const typeDefs = `#graphql
     ${Location.queries}
     ${Image.queries}
     ${Review.queries}
+    ${Setting.queries}
   }
 
   type Mutation {
@@ -76,5 +79,6 @@ export const typeDefs = `#graphql
     ${Image.mutations}
     ${Notification.mutations}
     ${Review.mutations}
+    ${Setting.mutations}
   }
 `;
