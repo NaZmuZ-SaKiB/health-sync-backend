@@ -58,12 +58,14 @@ const mutations = {
 
   updateManySetting: async (
     _: any,
-    args: TSettingUpdateInput[],
+    args: { settings: TSettingUpdateInput[] },
     { currentUser, prisma }: TContext,
   ) => {
     await auth(prisma, currentUser, [ROLE.ADMIN, ROLE.SUPER_ADMIN]);
 
-    const parsedData = await Setting.validations.updateMany.parseAsync(args);
+    const parsedData = await Setting.validations.updateMany.parseAsync(
+      args.settings,
+    );
 
     await Promise.all(
       parsedData.map((data: TSettingUpdateInput) =>
