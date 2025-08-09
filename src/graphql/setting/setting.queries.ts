@@ -6,4 +6,6 @@ export const queries = `#graphql
   setting(
     key: String!
   ): Setting!
+
+  homepageSetting: String!
 `;
